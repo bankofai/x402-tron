@@ -1,4 +1,4 @@
-"""PaymentPermit Facilitator 测试 - 演示验证和结算功能"""
+"""PaymentPermit Facilitator Test - Demonstrates verification and settlement functionality"""
 
 import asyncio
 import os
@@ -29,7 +29,7 @@ MERCHANT_CONTRACT_ADDRESS = os.getenv("MERCHANT_CONTRACT_ADDRESS")
 
 
 async def run_facilitator_settle():
-    """Facilitator 结算流程示例"""
+    """Facilitator settlement flow example"""
     facilitator_signer = TronFacilitatorSigner.from_private_key(
         TRON_PRIVATE_KEY, network=TRON_NETWORK.split(":")[-1]
     )
@@ -105,7 +105,7 @@ async def run_facilitator_settle():
 
 
 async def run_facilitator_settle_with_delivery():
-    """Facilitator 结算流程示例 - PAYMENT_AND_DELIVERY 场景"""
+    """Facilitator settlement flow example - PAYMENT_AND_DELIVERY scenario"""
     facilitator_signer = TronFacilitatorSigner.from_private_key(
         TRON_PRIVATE_KEY, network=TRON_NETWORK.split(":")[-1]
     )
@@ -147,8 +147,8 @@ async def run_facilitator_settle_with_delivery():
     # TRON uses milliseconds for block.timestamp, so multiply by 1000
     current_time_ms = current_time * 1000
     
-    # PAYMENT_AND_DELIVERY 场景：需要指定实际的接收代币和最小接收数量
-    # caller 设置为零地址，允许任何地址调用（包括 Merchant 合约）
+    # PAYMENT_AND_DELIVERY scenario: need to specify actual receive token and minimum receive amount
+    # caller set to zero address, allows any address to call (including Merchant contract)
     permit_context = {
         "paymentPermitContext": {
             "meta": {
@@ -158,10 +158,10 @@ async def run_facilitator_settle_with_delivery():
                 "validAfter": 0,
                 "validBefore": current_time_ms + 3600000,  # +1 hour in milliseconds
             },
-            "caller": "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb",  # TRON 零地址，允许任何地址调用
+            "caller": "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb",  # TRON zero address, allows any address to call
             "delivery": {
-                "receiveToken": USDT_TOKEN_ADDRESS,  # 实际的接收代币地址
-                "miniReceiveAmount": "500000",  # 最小接收数量 (0.5 USDT)
+                "receiveToken": USDT_TOKEN_ADDRESS,  # Actual receive token address
+                "miniReceiveAmount": "500000",  # Minimum receive amount (0.5 USDT)
                 "tokenId": "0",
             },
         }
@@ -190,9 +190,9 @@ async def main():
     if not TRON_PRIVATE_KEY:
         raise ValueError("TRON_PRIVATE_KEY not set in .env file")
 
-    # 选择要运行的测试场景
-    await run_facilitator_settle()  # PAYMENT_ONLY 场景
-    # await run_facilitator_settle_with_delivery()  # PAYMENT_AND_DELIVERY 场景
+    # Select test scenario to run
+    await run_facilitator_settle()  # PAYMENT_ONLY scenario
+    # await run_facilitator_settle_with_delivery()  # PAYMENT_AND_DELIVERY scenario
 
 
 if __name__ == "__main__":
