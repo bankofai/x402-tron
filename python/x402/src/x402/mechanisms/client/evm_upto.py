@@ -5,6 +5,7 @@ UptoEvmClientMechanism - "upto" 支付方案的 EVM 客户端机制
 from typing import Any, TYPE_CHECKING
 
 from x402.abi import get_payment_permit_eip712_types
+from x402.config import NetworkConfig
 from x402.mechanisms.client.base import ClientMechanism
 from x402.types import (
     PaymentPayload,
@@ -18,6 +19,7 @@ from x402.types import (
     ResourceInfo,
     PAYMENT_ONLY,
 )
+from x402.utils import EVM_ZERO_ADDRESS, convert_permit_to_eip712_message
 
 if TYPE_CHECKING:
     from x402.signers.client import ClientSigner
@@ -43,20 +45,42 @@ class UptoEvmClientMechanism(ClientMechanism):
         if context is None:
             raise ValueError("paymentPermitContext is required")
 
+        permit = self._build_permit(requirements, context)
+        
+        await self._ensure_allowance(permit, requirements.network)
+        
+        signature = await self._sign_permit(permit, requirements.network)
+
+        return PaymentPayload(
+            x402Version=2,
+            resource=ResourceInfo(url=resource),
+            accepted=requirements,
+            payload=PaymentPayloadData(
+                signature=signature,
+                paymentPermit=permit,
+            ),
+            extensions={},
+        )
+
+    def _build_permit(
+        self,
+        requirements: PaymentRequirements,
+        context: dict[str, Any],
+    ) -> PaymentPermit:
+        """Build PaymentPermit from requirements and context"""
         buyer_address = self._signer.get_address()
         meta = context.get("meta", {})
         delivery = context.get("delivery", {})
 
-        fee_to = "0x0000000000000000000000000000000000000000"
+        fee_to = EVM_ZERO_ADDRESS
         fee_amount = "0"
         if requirements.extra and requirements.extra.fee:
             fee_to = requirements.extra.fee.fee_to
             fee_amount = requirements.extra.fee.fee_amount
 
-        # Get caller from context, default to zero address if not provided
-        caller = context.get("caller", "0x0000000000000000000000000000000000000000")
+        caller = context.get("caller") or EVM_ZERO_ADDRESS
 
-        permit = PaymentPermit(
+        return PaymentPermit(
             meta=PermitMeta(
                 kind=meta.get("kind", PAYMENT_ONLY),
                 paymentId=meta.get("paymentId", ""),
@@ -76,39 +100,29 @@ class UptoEvmClientMechanism(ClientMechanism):
                 feeAmount=fee_amount,
             ),
             delivery=Delivery(
-                receiveToken=delivery.get("receiveToken", "0x0000000000000000000000000000000000000000"),
+                receiveToken=delivery.get("receiveToken", EVM_ZERO_ADDRESS),
                 miniReceiveAmount=str(delivery.get("miniReceiveAmount", "0")),
                 tokenId=str(delivery.get("tokenId", "0")),
             ),
         )
 
+    async def _ensure_allowance(self, permit: PaymentPermit, network: str) -> None:
+        """Ensure token allowance for payment + fee"""
         total_amount = int(permit.payment.max_pay_amount) + int(permit.fee.fee_amount)
         await self._signer.ensure_allowance(
             permit.payment.pay_token,
             total_amount,
-            requirements.network,
+            network,
         )
 
-        # Get payment permit contract address and chain ID for domain
-        from x402.config import NetworkConfig
-        permit_address = NetworkConfig.get_payment_permit_address(requirements.network)
-        chain_id = NetworkConfig.get_chain_id(requirements.network)
+    async def _sign_permit(self, permit: PaymentPermit, network: str) -> str:
+        """Sign permit with EIP-712"""
+        permit_address = NetworkConfig.get_payment_permit_address(network)
+        chain_id = NetworkConfig.get_chain_id(network)
         
-        # Convert permit to dict for EIP-712 signing
-        message = permit.model_dump(by_alias=True)
+        message = convert_permit_to_eip712_message(permit)
         
-        # Convert string values to integers for EIP-712 compatibility
-        # EIP-712 expects uint256 types to be integers, not strings
-        from x402.types import KIND_MAP
-        message["meta"]["kind"] = KIND_MAP.get(message["meta"]["kind"], 0)
-        message["meta"]["nonce"] = int(message["meta"]["nonce"])
-        message["payment"]["maxPayAmount"] = int(message["payment"]["maxPayAmount"])
-        message["fee"]["feeAmount"] = int(message["fee"]["feeAmount"])
-        message["delivery"]["miniReceiveAmount"] = int(message["delivery"]["miniReceiveAmount"])
-        message["delivery"]["tokenId"] = int(message["delivery"]["tokenId"])
-        
-        # Note: Contract EIP712Domain only has (name, chainId, verifyingContract) - NO version!
-        signature = await self._signer.sign_typed_data(
+        return await self._signer.sign_typed_data(
             domain={
                 "name": "PaymentPermit",
                 "chainId": chain_id,
@@ -116,15 +130,4 @@ class UptoEvmClientMechanism(ClientMechanism):
             },
             types=get_payment_permit_eip712_types(),
             message=message,
-        )
-
-        return PaymentPayload(
-            x402Version=2,
-            resource=ResourceInfo(url=resource),
-            accepted=requirements,
-            payload=PaymentPayloadData(
-                signature=signature,
-                paymentPermit=permit,
-            ),
-            extensions={},
         )

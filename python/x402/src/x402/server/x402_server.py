@@ -145,7 +145,7 @@ class X402Server:
         Args:
             requirements: 支付要求列表
             resource_info: 资源信息
-            payment_id: 用于跟踪的支付 ID
+            payment_id: 用于跟踪的支付 ID (hex format with 0x prefix)
             nonce: 幂等性 nonce
             valid_after: 有效起始时间戳
             valid_before: 有效截止时间戳
@@ -155,13 +155,14 @@ class X402Server:
         """
         import time
         import uuid
+        from x402.utils import generate_payment_id
 
         now = int(time.time())
         extensions = PaymentRequiredExtensions(
             paymentPermitContext=PaymentPermitContext(
                 meta=PaymentPermitContextMeta(
                     kind=PAYMENT_ONLY,
-                    paymentId=payment_id or str(uuid.uuid4()),
+                    paymentId=payment_id or generate_payment_id(),
                     nonce=nonce or str(uuid.uuid4().int),
                     validAfter=valid_after or now,
                     validBefore=valid_before or (now + 3600),

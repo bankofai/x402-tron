@@ -15,10 +15,10 @@ setup_logging()
 load_dotenv(Path(__file__).parent.parent.parent.parent / ".env")
 
 TRON_PRIVATE_KEY = os.getenv("TRON_PRIVATE_KEY", "")
-TRON_NETWORK = "tron:nile"
+TRON_NETWORK = "tron:nile"  # Hardcoded network
 # Use valid TRON addresses from Nile testnet
-TEST_USDT_ADDRESS = os.getenv("TEST_USDT_ADDRESS", "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf")
-MERCHANT_ADDRESS = os.getenv("MERCHANT_ADDRESS", "TLBaRhANhwgZyUk6Z1ynCn1Ld7BRH1jBjZ")
+USDT_TOKEN_ADDRESS = os.getenv("USDT_TOKEN_ADDRESS", "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf")
+MERCHANT_CONTRACT_ADDRESS = os.getenv("MERCHANT_CONTRACT_ADDRESS")
 FACILITATOR_ADDRESS = os.getenv("FACILITATOR_ADDRESS", "TQn9Y2khEsNJey1pqjPPsGezRQqKS2eqA7")
 
 
@@ -34,8 +34,8 @@ async def run_client_authorization():
         scheme="exact",
         network=TRON_NETWORK,
         amount="1000000",
-        asset=TEST_USDT_ADDRESS,
-        payTo=MERCHANT_ADDRESS,
+        asset=USDT_TOKEN_ADDRESS,
+        payTo=MERCHANT_CONTRACT_ADDRESS,
     )
 
     # 构造支付许可上下文
@@ -59,7 +59,7 @@ async def run_client_authorization():
     # 创建支付载荷
     payload = await mechanism.create_payment_payload(
         requirements,
-        "https://api.example.com/resource",
+        "http://localhost:8000/protected",
         extensions=permit_context,
     )
     

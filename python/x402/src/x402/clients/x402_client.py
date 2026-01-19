@@ -2,6 +2,7 @@
 X402Client - x402 协议的核心支付客户端
 """
 
+import logging
 from typing import Any, Callable, Protocol
 
 from x402.types import (
@@ -9,6 +10,8 @@ from x402.types import (
     PaymentPermitContext,
     PaymentRequirements,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ClientMechanism(Protocol):
@@ -76,6 +79,7 @@ class X402Client:
             self 以支持链式调用
         """
         priority = self._calculate_priority(network_pattern)
+        logger.info(f"Registering mechanism for pattern '{network_pattern}' with priority {priority}")
         self._mechanisms.append(MechanismEntry(network_pattern, mechanism, priority))
         self._mechanisms.sort(key=lambda e: e.priority, reverse=True)
         return self
@@ -98,23 +102,34 @@ class X402Client:
         异常:
             ValueError: 未找到支持的支付要求
         """
+        logger.info(f"Selecting payment requirements from {len(accepts)} options")
+        logger.debug(f"Available payment requirements: {[r.model_dump() for r in accepts]}")
+        
         candidates = list(accepts)
 
         if filters:
+            logger.debug(f"Applying filters: scheme={filters.scheme}, network={filters.network}, max_amount={filters.max_amount}")
             if filters.scheme:
                 candidates = [r for r in candidates if r.scheme == filters.scheme]
+                logger.debug(f"After scheme filter: {len(candidates)} candidates")
             if filters.network:
                 candidates = [r for r in candidates if r.network == filters.network]
+                logger.debug(f"After network filter: {len(candidates)} candidates")
             if filters.max_amount:
                 max_val = int(filters.max_amount)
                 candidates = [r for r in candidates if int(r.amount) <= max_val]
+                logger.debug(f"After amount filter: {len(candidates)} candidates")
 
         candidates = [r for r in candidates if self._find_mechanism(r.network) is not None]
+        logger.debug(f"After mechanism filter: {len(candidates)} candidates")
 
         if not candidates:
+            logger.error("No supported payment requirements found")
             raise ValueError("No supported payment requirements found")
 
-        return candidates[0]
+        selected = candidates[0]
+        logger.info(f"Selected payment requirement: network={selected.network}, scheme={selected.scheme}, amount={selected.amount}")
+        return selected
 
     async def create_payment_payload(
         self,
@@ -133,11 +148,16 @@ class X402Client:
         返回:
             支付载荷
         """
+        logger.info(f"Creating payment payload for network={requirements.network}, resource={resource}")
         mechanism = self._find_mechanism(requirements.network)
         if mechanism is None:
+            logger.error(f"No mechanism registered for network: {requirements.network}")
             raise ValueError(f"No mechanism registered for network: {requirements.network}")
 
-        return await mechanism.create_payment_payload(requirements, resource, extensions)
+        logger.debug(f"Using mechanism: {mechanism.__class__.__name__}")
+        payload = await mechanism.create_payment_payload(requirements, resource, extensions)
+        logger.info("Payment payload created successfully")
+        return payload
 
     async def handle_payment(
         self,

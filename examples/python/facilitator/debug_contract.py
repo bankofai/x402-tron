@@ -3,7 +3,6 @@
 import asyncio
 import os
 import time
-import secrets
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -19,14 +18,14 @@ load_dotenv(Path(__file__).parent.parent.parent.parent / ".env")
 
 TRON_PRIVATE_KEY = os.getenv("TRON_PRIVATE_KEY", "")
 TRON_NETWORK = "tron:nile"
-TEST_USDT_ADDRESS = os.getenv("TEST_USDT_ADDRESS", "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf")
+USDT_TOKEN_ADDRESS = os.getenv("USDT_TOKEN_ADDRESS", "TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf")
 # Use the address derived from TRON_PRIVATE_KEY as the buyer
 # This is important: the buyer must be the one signing the permit
 from tronpy.keys import PrivateKey
 _pk = PrivateKey(bytes.fromhex(TRON_PRIVATE_KEY[2:] if TRON_PRIVATE_KEY.startswith("0x") else TRON_PRIVATE_KEY))
 BUYER_ADDRESS = _pk.public_key.to_base58check_address()
-# Use a valid test address (generated from test private key)
-MERCHANT_ADDRESS = os.getenv("MERCHANT_ADDRESS")
+# Merchant contract address for receiving payments
+MERCHANT_CONTRACT_ADDRESS = os.getenv("MERCHANT_CONTRACT_ADDRESS")
 
 
 async def run_facilitator_settle():
@@ -47,8 +46,8 @@ async def run_facilitator_settle():
         scheme="exact",
         network=TRON_NETWORK,
         amount="1000000",
-        asset=TEST_USDT_ADDRESS,
-        payTo=MERCHANT_ADDRESS,
+        asset=USDT_TOKEN_ADDRESS,
+        payTo=MERCHANT_CONTRACT_ADDRESS,
         extra=PaymentRequirementsExtra(
             fee=FeeInfo(
                 feeTo=facilitator_address,
@@ -64,7 +63,8 @@ async def run_facilitator_settle():
 
     current_time = int(time.time())
     # Generate random paymentId to avoid nonce conflicts
-    random_payment_id = "0x" + secrets.token_hex(16)
+    from x402.utils import generate_payment_id
+    random_payment_id = generate_payment_id()
     # Use timestamp as nonce to ensure uniqueness
     nonce = str(current_time)
     
@@ -122,8 +122,8 @@ async def run_facilitator_settle_with_delivery():
         scheme="exact",
         network=TRON_NETWORK,
         amount="1000000",
-        asset=TEST_USDT_ADDRESS,
-        payTo=MERCHANT_ADDRESS,
+        asset=USDT_TOKEN_ADDRESS,
+        payTo=MERCHANT_CONTRACT_ADDRESS,
         extra=PaymentRequirementsExtra(
             fee=FeeInfo(
                 feeTo=facilitator_address,
@@ -139,7 +139,8 @@ async def run_facilitator_settle_with_delivery():
 
     current_time = int(time.time())
     # Generate random paymentId to avoid nonce conflicts
-    random_payment_id = "0x" + secrets.token_hex(16)
+    from x402.utils import generate_payment_id
+    random_payment_id = generate_payment_id()
     # Use timestamp as nonce to ensure uniqueness
     nonce = str(current_time)
     
@@ -159,7 +160,7 @@ async def run_facilitator_settle_with_delivery():
             },
             "caller": "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb",  # TRON 零地址，允许任何地址调用
             "delivery": {
-                "receiveToken": TEST_USDT_ADDRESS,  # 实际的接收代币地址
+                "receiveToken": USDT_TOKEN_ADDRESS,  # 实际的接收代币地址
                 "miniReceiveAmount": "500000",  # 最小接收数量 (0.5 USDT)
                 "tokenId": "0",
             },
@@ -190,8 +191,8 @@ async def main():
         raise ValueError("TRON_PRIVATE_KEY not set in .env file")
 
     # 选择要运行的测试场景
-    # await run_facilitator_settle()  # PAYMENT_ONLY 场景
-    await run_facilitator_settle_with_delivery()  # PAYMENT_AND_DELIVERY 场景
+    await run_facilitator_settle()  # PAYMENT_ONLY 场景
+    # await run_facilitator_settle_with_delivery()  # PAYMENT_AND_DELIVERY 场景
 
 
 if __name__ == "__main__":

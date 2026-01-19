@@ -8,14 +8,14 @@ import sys
 
 def setup_logging(level: int = logging.INFO) -> None:
     """
-    Configure logging with file and line number information
+    Configure logging with timestamp, file and line number information
     
     Args:
         level: Logging level (default: INFO)
     """
-    # Create formatter with file and line number
+    # Create formatter with timestamp, file and line number
     formatter = logging.Formatter(
-        fmt='%(levelname)-8s %(name)s %(filename)s:%(lineno)d %(message)s',
+        fmt='%(asctime)s - %(levelname)-8s %(name)s %(filename)s:%(lineno)d %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     
