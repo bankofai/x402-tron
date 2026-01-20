@@ -3,6 +3,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from x402.server import X402Server
 from x402.fastapi import x402_protected
 from x402.facilitator import FacilitatorClient
@@ -30,6 +31,9 @@ USDT_TOKEN_ADDRESS = os.getenv("USDT_TOKEN_ADDRESS", "TXYZopYRdj2D9XRtbG411XZZ3k
 FACILITATOR_URL = "http://localhost:8001"
 SERVER_HOST = "0.0.0.0"
 SERVER_PORT = 8000
+
+# Path to protected image
+PROTECTED_IMAGE_PATH = Path(__file__).parent / "protected.png"
 
 if not MERCHANT_CONTRACT_ADDRESS:
     raise ValueError("MERCHANT_CONTRACT_ADDRESS environment variable is required")
@@ -68,7 +72,10 @@ async def root():
     pay_to=MERCHANT_CONTRACT_ADDRESS,
 )
 async def protected_endpoint(request: Request):
-    return {"message": "Payment successful! Access granted.", "data": "Protected content"}
+    """Serve the protected image directly"""
+    if not PROTECTED_IMAGE_PATH.exists():
+        return {"error": "Protected image not found"}
+    return FileResponse(PROTECTED_IMAGE_PATH, media_type="image/png")
 
 if __name__ == "__main__":
     import uvicorn

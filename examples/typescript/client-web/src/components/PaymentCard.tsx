@@ -90,8 +90,21 @@ export function PaymentCard({
       });
 
       if (response.ok) {
-        const result = await response.json();
-        onSuccess(result);
+        const contentType = response.headers.get('content-type');
+        console.log('Payment response content-type:', contentType);
+        
+        // Check if response is an image
+        if (contentType?.startsWith('image/')) {
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          console.log('Payment success - image blob URL:', imageUrl);
+          onSuccess({ url: imageUrl, type: 'image' });
+        } else {
+          // JSON response
+          const result = await response.json();
+          console.log('Payment success - JSON:', result);
+          onSuccess(result);
+        }
       } else {
         const errorText = await response.text();
         onError(`Payment failed: ${response.status} - ${errorText}`);
@@ -114,55 +127,59 @@ export function PaymentCard({
   ]);
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow-sm">
-      <h2 className="mb-4 text-2xl font-bold text-center text-gray-900">
+    <div className="border border-gray-200 rounded-2xl p-10 bg-white max-w-lg mx-auto">
+      <h2 className="mb-3 text-3xl font-bold text-center text-gray-900">
         Payment Required
       </h2>
 
-      <p className="mb-6 text-center text-gray-600">
+      <p className="mb-8 text-center text-gray-600 text-lg">
         Access to protected content. To access this content, please pay{' '}
-        <span className="font-semibold">${formattedAmount} {tokenName}</span>
+        <span className="font-semibold text-gray-900">${formattedAmount} {tokenName}</span>.
       </p>
 
       {/* Faucet Link */}
-      <p className="mb-6 text-sm text-center text-purple-600">
+      <p className="mb-8 text-sm text-center text-gray-500 italic">
         Need {tokenName}?{' '}
         <a
           href="https://nileex.io/join/getJoinPage"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline hover:text-purple-800"
+          className="text-gray-900 underline hover:text-gray-700"
         >
-          Get some here.
+          Get some here
         </a>
       </p>
 
       {/* Wallet Connection */}
       {!connected ? (
         <div className="space-y-4">
-          <WalletActionButton className="px-4 py-3 w-full font-medium text-white bg-blue-600 rounded-lg transition-colors hover:bg-blue-700" />
+          <WalletActionButton className="w-full btn-primary" />
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Disconnect Button */}
-          <WalletActionButton className="px-4 py-3 w-full font-medium text-gray-800 bg-gray-200 rounded-lg transition-colors hover:bg-gray-300" />
+          <WalletActionButton className="w-full btn-secondary" />
 
           {/* Payment Details */}
-          <div className="p-4 space-y-3 bg-gray-50 rounded-lg">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Wallet:</span>
-              <span className="font-mono text-gray-900">
+          <div className="space-y-4 py-6 border-y border-gray-200">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Wallet</span>
+              <span className="font-mono text-sm text-gray-900">
                 {address?.slice(0, 6)}...{address?.slice(-4)}
               </span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Amount:</span>
-              <span className="font-medium text-gray-900">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Available balance</span>
+              <span className="font-medium text-gray-900">••••• {tokenName}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Amount</span>
+              <span className="font-semibold text-gray-900">
                 ${formattedAmount} {tokenName}
               </span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Network:</span>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Network</span>
               <span className="text-gray-900">{networkName}</span>
             </div>
           </div>
@@ -171,7 +188,7 @@ export function PaymentCard({
           <button
             onClick={handlePay}
             disabled={isPaying}
-            className="px-4 py-3 w-full font-medium text-white bg-blue-600 rounded-lg transition-colors hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full btn-primary text-lg"
           >
             {isPaying ? 'Processing...' : 'Pay now'}
           </button>
@@ -180,21 +197,20 @@ export function PaymentCard({
 
       {/* Payment Options (if multiple) */}
       {paymentRequired.accepts.length > 1 && (
-        <div className="pt-4 mt-6 border-t border-gray-200">
-          <p className="mb-2 text-sm text-gray-600">Payment options:</p>
+        <div className="pt-6 mt-6 border-t border-gray-200">
+          <p className="mb-3 text-sm text-gray-500 uppercase tracking-wide">Payment options</p>
           <div className="space-y-2">
             {paymentRequired.accepts.map((req, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedRequirement(req)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
+                className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
                   selectedRequirement === req
-                    ? 'bg-blue-100 border-blue-500 border'
-                    : 'bg-gray-50 hover:bg-gray-100'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-gray-50 hover:bg-gray-100 text-gray-900'
                 }`}
               >
-                {NETWORK_NAMES[req.network] || req.network} -{' '}
-                {TOKEN_NAMES[req.asset] || 'Token'}
+                {NETWORK_NAMES[req.network] || req.network} - {TOKEN_NAMES[req.asset] || 'Token'}
               </button>
             ))}
           </div>
