@@ -1,5 +1,5 @@
 {
-  "name": "@x402/client-example",
+  "name": "@tvm-x402/client-example",
   "version": "0.1.0",
   "description": "x402 TypeScript Client Example",
   "type": "module",
@@ -9,10 +9,10 @@
     "dev": "tsx watch src/main.ts"
   },
   "dependencies": {
-    "@x402/core": "workspace:*",
-    "@x402/http-fetch": "workspace:*",
-    "@x402/mechanism-tron": "workspace:*",
-    "@x402/signer-tron": "workspace:*",
+    "@tvm-x402/core": "workspace:*",
+    "@tvm-x402/http-fetch": "workspace:*",
+    "@tvm-x402/mechanism-tron": "workspace:*",
+    "@tvm-x402/signer-tron": "workspace:*",
     "dotenv": "^16.3.1",
     "tronweb": "^6.0.0"
   },

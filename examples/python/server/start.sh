@@ -34,10 +34,10 @@ fi
 source "../../../.venv/bin/activate"
 
 # Install dependencies if needed
-if ! python -c "import x402" 2>/dev/null; then
+if ! python -c "import tvm_x402" 2>/dev/null; then
     echo "Installing dependencies..."
-    pip install -e ../../../python/x402
-    pip install -r requirements.txt
+    uv pip install -e ../../../python/x402
+    uv pip install -r requirements.txt
 fi
 
 echo "Starting server on http://localhost:8000"

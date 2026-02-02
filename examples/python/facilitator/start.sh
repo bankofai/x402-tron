@@ -3,7 +3,7 @@
 # Start x402 Facilitator
 # This script starts the facilitator service
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
@@ -34,11 +34,22 @@ fi
 # Activate virtual environment
 source "../../../.venv/bin/activate"
 
+PIP_CMD=(python -m pip)
+
 # Install dependencies if needed
 if ! python -c "import x402" 2>/dev/null; then
     echo "Installing dependencies..."
-    pip install -e ../../../python/x402
-    pip install -r requirements.txt
+    # Some environments don't expose a `pip` executable even after venv activation.
+    # Ensure pip exists, then always invoke it via the interpreter.
+    python -m ensurepip --upgrade >/dev/null 2>&1 || true
+    "${PIP_CMD[@]}" --version >/dev/null 2>&1 || {
+        echo "Error: pip is not available in the virtual environment." >&2
+        echo "Try recreating the venv: python -m venv .venv" >&2
+        exit 1
+    }
+
+    "${PIP_CMD[@]}" install -e ../../../python/x402
+    "${PIP_CMD[@]}" install -r requirements.txt
 fi
 
 echo "Starting facilitator on http://localhost:8001"

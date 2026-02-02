@@ -5,11 +5,11 @@ import { dirname } from 'path';
 
 import { TronWeb } from 'tronweb';
 
-import { X402Client } from '@x402/core';
-import { X402FetchClient } from '@x402/http-fetch';
-import { UptoTronClientMechanism } from '@x402/mechanism-tron';
-import { TronClientSigner } from '@x402/signer-tron';
-import type { SettleResponse } from '@x402/core';
+import { X402Client } from '@tvm-x402/core';
+import { X402FetchClient } from '@tvm-x402/http-fetch';
+import { UptoTronClientMechanism } from '@tvm-x402/mechanism-tron';
+import { TronClientSigner } from '@tvm-x402/signer-tron';
+import type { SettleResponse } from '@tvm-x402/core';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
