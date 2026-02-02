@@ -209,4 +209,4 @@ __marimo__/
 /.vscode/
 /examples/typescript/client-web/node_modules/
 /examples/typescript/client/node_modules/
-/typescript/node_modules/
+*node_modules/
