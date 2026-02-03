@@ -144,10 +144,23 @@ class BaseUptoFacilitatorMechanism(FacilitatorMechanism):
 
         # Always use payment only settlement
         self._logger.info("Settling payment only via PaymentPermit contract...")
+        self._logger.info(f"Settlement details:")
+        self._logger.info(f"  - buyer: {permit.buyer}")
+        self._logger.info(f"  - payTo: {permit.payment.pay_to}")
+        self._logger.info(f"  - payToken: {permit.payment.pay_token}")
+        self._logger.info(f"  - maxPayAmount: {permit.payment.max_pay_amount}")
+        self._logger.info(f"  - feeTo: {permit.fee.fee_to}")
+        self._logger.info(f"  - feeAmount: {permit.fee.fee_amount}")
+        
         tx_hash = await self._settle_payment_only(permit, signature, requirements)
 
         if tx_hash is None:
             self._logger.error("Settlement transaction failed: no transaction hash returned")
+            self._logger.error("This usually indicates:")
+            self._logger.error("  - Insufficient bandwidth/energy on the facilitator account")
+            self._logger.error("  - Insufficient TRX balance to pay for transaction fees")
+            self._logger.error("  - Network connectivity issues")
+            self._logger.error("  - Contract execution error (check contract address and ABI)")
             return SettleResponse(
                 success=False,
                 errorReason="transaction_failed",

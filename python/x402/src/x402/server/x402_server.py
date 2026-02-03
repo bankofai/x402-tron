@@ -227,6 +227,16 @@ class X402Server:
         if not self._validate_payload_matches_requirements(payload, requirements):
             return VerifyResponse(isValid=False, invalidReason="payload_mismatch")
 
+        # Server-side signature verification to prevent incorrect signatures from frontend
+        mechanism = self._mechanisms.get(requirements.network)
+        if mechanism is not None:
+            permit = payload.payload.payment_permit
+            signature = payload.payload.signature
+            
+            is_valid = await mechanism.verify_signature(permit, signature, requirements.network)
+            if not is_valid:
+                return VerifyResponse(isValid=False, invalidReason="invalid_signature_server")
+
         facilitator = self._find_facilitator_for_payload(payload)
         if facilitator is None:
             return VerifyResponse(isValid=False, invalidReason="no_facilitator")

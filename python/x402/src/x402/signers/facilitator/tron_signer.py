@@ -159,7 +159,25 @@ class TronFacilitatorSigner(FacilitatorSigner):
         try:
             # Normalize contract address to ensure valid Base58Check format
             normalized_address = self._normalize_tron_address(contract_address)
-            logger.debug(f"Normalized contract address: {contract_address} -> {normalized_address}")
+            logger.info(f"Normalized contract address: {contract_address} -> {normalized_address}")
+            
+            # Log account resources before transaction
+            try:
+                account_info = client.get_account(self._address)
+                account_resource = client.get_account_resource(self._address)
+                logger.info(f"Account address: {self._address}")
+                logger.info(f"Account balance: {account_info.get('balance', 0) / 1_000_000:.6f} TRX")
+                logger.info(f"Account resources:")
+                logger.info(f"  - freeNetLimit: {account_resource.get('freeNetLimit', 0)}")
+                logger.info(f"  - freeNetUsed: {account_resource.get('freeNetUsed', 0)}")
+                logger.info(f"  - NetLimit: {account_resource.get('NetLimit', 0)}")
+                logger.info(f"  - NetUsed: {account_resource.get('NetUsed', 0)}")
+                logger.info(f"  - EnergyLimit: {account_resource.get('EnergyLimit', 0)}")
+                logger.info(f"  - EnergyUsed: {account_resource.get('EnergyUsed', 0)}")
+                logger.info(f"  - TotalEnergyLimit: {account_resource.get('TotalEnergyLimit', 0)}")
+                logger.info(f"  - TotalEnergyWeight: {account_resource.get('TotalEnergyWeight', 0)}")
+            except Exception as resource_err:
+                logger.warning(f"Failed to fetch account resources: {resource_err}")
             
             # Log contract call parameters in detail
             self._log_contract_parameters(method, args, logger)
@@ -178,6 +196,7 @@ class TronFacilitatorSigner(FacilitatorSigner):
             logger.info(f"  Method ID: {func.function_signature_hash}")
             
             # Build and sign transaction
+            logger.info(f"Building transaction with fee_limit=1,000,000,000 SUN (1000 TRX)")
             txn = (
                 func(*args)
                 .with_owner(self._address)
@@ -186,10 +205,44 @@ class TronFacilitatorSigner(FacilitatorSigner):
                 .sign(PrivateKey(bytes.fromhex(self._private_key)))
             )
             
+            # Log transaction details before broadcast
+            try:
+                txn_dict = txn.to_json()
+                logger.info(f"Transaction built successfully:")
+                logger.info(f"  - txID: {txn_dict.get('txID', 'N/A')}")
+                logger.info(f"  - raw_data_hex length: {len(txn_dict.get('raw_data_hex', ''))}")
+                logger.info(f"  - fee_limit: {txn_dict.get('raw_data', {}).get('fee_limit', 'N/A')}")
+            except Exception as log_err:
+                logger.warning(f"Failed to log transaction details: {log_err}")
+            
+            logger.info("Broadcasting transaction...")
             result = txn.broadcast()
+            logger.info(f"Transaction broadcast successful: {result}")
             return result.get("txid")
         except Exception as e:
-            logger.error(f"Contract call failed: {e}", exc_info=True)
+            error_type = type(e).__name__
+            error_msg = str(e)
+            logger.error(f"Contract call failed: [{error_type}] {error_msg}")
+            
+            # Provide specific guidance for common errors
+            if "BANDWITH_ERROR" in error_msg or "bandwidth" in error_msg.lower():
+                logger.error("BANDWIDTH ERROR: The account does not have enough bandwidth to broadcast the transaction.")
+                logger.error("Solutions:")
+                logger.error("  1. Wait for bandwidth to regenerate (24 hours for free bandwidth)")
+                logger.error("  2. Stake TRX to get more bandwidth")
+                logger.error("  3. Burn TRX to pay for bandwidth (transaction will consume TRX balance)")
+                logger.error("  4. Use a different account with available bandwidth")
+            elif "ENERGY" in error_msg:
+                logger.error("ENERGY ERROR: The account does not have enough energy to execute the contract.")
+                logger.error("Solutions:")
+                logger.error("  1. Stake TRX to get energy")
+                logger.error("  2. Burn TRX to pay for energy")
+            elif "balance" in error_msg.lower():
+                logger.error("BALANCE ERROR: The account does not have enough TRX balance.")
+                logger.error("Solution: Add TRX to the account")
+            
+            # Log full exception details
+            logger.error("Full exception details:", exc_info=True)
             return None
     
     def _log_contract_parameters(self, method: str, args: list[Any], logger: Any) -> None:
