@@ -35,6 +35,8 @@ def test_client_register_mechanism():
 def test_client_select_payment_requirements():
     """测试从多个网络中选择支付要求"""
     client = X402Client()
+    mechanism = MockClientMechanism()
+    client.register("tron:shasta", mechanism)
 
     accepts = [
         PaymentRequirements(
@@ -61,6 +63,8 @@ def test_client_select_payment_requirements():
 def test_client_select_with_tron_filter():
     """测试使用过滤器选择 TRON 支付要求"""
     client = X402Client()
+    mechanism = MockClientMechanism()
+    client.register("tron:shasta", mechanism)
 
     accepts = [
         PaymentRequirements(
@@ -90,6 +94,8 @@ def test_client_select_with_evm_filter():
     """测试使用过滤器选择 EVM 支付要求"""
     client = X402Client()
 
+    mechanism = MockClientMechanism()
+    client.register("eip155:8453", mechanism)
     accepts = [
         PaymentRequirements(
             scheme="exact",

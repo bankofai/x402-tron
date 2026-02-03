@@ -108,14 +108,14 @@ class X402Client:
         candidates = list(accepts)
 
         if filters:
-            logger.debug(f"Applying filters: scheme={filters.scheme}, network={filters.network}, max_amount={filters.max_amount}")
-            if filters.scheme:
+            ### logger.debug(f"Applying filters: scheme={filters.scheme}, network={filters.network}, max_amount={filters.max_amount}")
+            if hasattr(filters, "scheme") and filters.scheme:
                 candidates = [r for r in candidates if r.scheme == filters.scheme]
                 logger.debug(f"After scheme filter: {len(candidates)} candidates")
-            if filters.network:
+            if hasattr(filters, "network") and filters.network:
                 candidates = [r for r in candidates if r.network == filters.network]
                 logger.debug(f"After network filter: {len(candidates)} candidates")
-            if filters.max_amount:
+            if hasattr(filters, "max_amount") and filters.max_amount:
                 max_val = int(filters.max_amount)
                 candidates = [r for r in candidates if int(r.amount) <= max_val]
                 logger.debug(f"After amount filter: {len(candidates)} candidates")
