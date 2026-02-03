@@ -7,7 +7,7 @@ fi
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-NPM_TAG="beta"
+# NPM_TAG="beta"
 NO_GIT_CHECKS="1"
 DRY_RUN="0"
 PYPI_REPOSITORY="pypi"
@@ -18,7 +18,7 @@ run_clean_env() {
     HOME="${HOME}" \
     USER="${USER:-}" \
     SHELL="${SHELL:-}" \
-    NPM_TAG="${NPM_TAG}" \
+    NPM_TAG="${NPM_TAG:-latest}" \
     NO_GIT_CHECKS="${NO_GIT_CHECKS}" \
     DRY_RUN="${DRY_RUN}" \
     PYPI_REPOSITORY="${PYPI_REPOSITORY}" \
