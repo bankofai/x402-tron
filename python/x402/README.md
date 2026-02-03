@@ -1,20 +1,20 @@
-# tvm-x402
+# x402-tron
 
 Python SDK for the x402 payment protocol (TRON-only).
 
 ## Installation
 
 ```bash
-pip install tvm-x402
+pip install x402-tron
 ```
 
 Optional extras:
 
 ```bash
-pip install "tvm-x402[tron]"
-pip install "tvm-x402[fastapi]"
-pip install "tvm-x402[flask]"
-pip install "tvm-x402[all]"
+pip install "x402-tron[tron]"
+pip install "x402-tron[fastapi]"
+pip install "x402-tron[flask]"
+pip install "x402-tron[all]"
 ```
 
 ## Quick Start
@@ -39,5 +39,5 @@ client = X402HttpClient(http_client=http_client, x402_client=x402_client)
 
 ## Links
 
-- Repository: https://github.com/sun-protocol/tvm-x402
-- Issues: https://github.com/sun-protocol/tvm-x402/issues
+- Repository: https://github.com/open-aibank/x402-tron
+- Issues: https://github.com/open-aibank/x402-tron/issues

@@ -47,7 +47,7 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm -r build
       
-      - name: Publish @sun-protocol/tvm-x402 package
+      - name: Publish @open-aibank/x402-tron package
         working-directory: ./typescript/packages/x402
         env:
           NPM_TAG: ${{ inputs.tag || 'beta' }}

@@ -11,8 +11,8 @@ dependencies = [
     "tronpy>=0.4.0",
     "python-dotenv>=1.0.0",
     "eth-account>=0.10.0",
-    "tvm-x402[fastapi,tron]",
+    "x402-tron[fastapi,tron]",
 ]
 
 [tool.uv.sources]
-tvm-x402 = { workspace = true }
+x402-tron = { workspace = true }

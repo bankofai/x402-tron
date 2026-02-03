@@ -64,3 +64,23 @@ class ServerMechanism(ABC):
             True if valid
         """
         pass
+
+    @abstractmethod
+    async def verify_signature(
+        self,
+        permit: Any,
+        signature: str,
+        network: str,
+    ) -> bool:
+        """
+        Verify payment permit signature.
+
+        Args:
+            permit: Payment permit to verify
+            signature: Signature string
+            network: Network identifier
+
+        Returns:
+            True if signature is valid
+        """
+        pass

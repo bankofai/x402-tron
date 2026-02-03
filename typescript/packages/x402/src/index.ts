@@ -1,5 +1,5 @@
 /**
- * tvm-x402 TypeScript SDK
+ * x402-tron TypeScript SDK
  * 
  * @packageDocumentation
  */

@@ -1,22 +1,22 @@
 {
-  "name": "@sun-protocol/tvm-x402",
-  "version": "0.1.1",
-  "description": "tvm-x402 TypeScript SDK (TRON-only)",
+  "name": "@open-aibank/x402-tron",
+  "version": "0.1.4",
+  "description": "x402-tron TypeScript SDK (TRON-only)",
   "keywords": [
     "x402",
-    "tvm-x402",
+    "x402-tron",
     "tron",
     "trx",
     "payment",
     "blockchain"
   ],
-  "homepage": "https://github.com/sun-protocol/tvm-x402#readme",
+  "homepage": "https://github.com/open-aibank/x402-tron#readme",
   "bugs": {
-    "url": "https://github.com/sun-protocol/tvm-x402/issues"
+    "url": "https://github.com/open-aibank/x402-tron/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sun-protocol/tvm-x402.git",
+    "url": "git+https://github.com/open-aibank/x402-tron.git",
     "directory": "typescript/packages/x402"
   },
   "engines": {

@@ -1,5 +1,5 @@
 {
-  "name": "@tvm-x402/tron-client-web-example",
+  "name": "@x402-tron/tron-client-web-example",
   "private": true,
   "version": "0.0.1",
   "type": "module",
@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@open-aibank/x402-tron": "workspace:*",
     "@tronweb3/tronwallet-abstract-adapter": "^1.1.9",
     "@tronweb3/tronwallet-adapter-react-hooks": "^1.1.2",
     "@tronweb3/tronwallet-adapter-react-ui": "^1.1.11",

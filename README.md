@@ -1,6 +1,6 @@
-# tvm-x402
+# x402-tron
 
-tvm-x402 is a TRON implementation of the x402 payment protocol standard. It enables internet-native payments on the TRON blockchain with minimal integration effort.
+x402-tron is a TRON implementation of the x402 payment protocol standard. It enables internet-native payments on the TRON blockchain with minimal integration effort.
 
 ```python
 # Server example
@@ -30,23 +30,19 @@ async def get_weather():
 
 ```shell
 # Install with TRON support
-pip install tvm-x402[tron]
+pip install x402-tron[tron]
 
 # Install with FastAPI integration
-pip install tvm-x402[fastapi]
+pip install x402-tron[fastapi]
 
 # Install all optional dependencies
-pip install tvm-x402[all]
+pip install x402-tron[all]
 ```
 
 ### TypeScript
 
 ```shell
-# Core packages
-npm install @tvm-x402/core @tvm-x402/mechanism-tron @tvm-x402/signer-tron
-
-# With HTTP client
-npm install @tvm-x402/core @tvm-x402/mechanism-tron @tvm-x402/signer-tron @tvm-x402/http-fetch
+npm i @open-aibank/x402-tron
 ```
 
 ## Features
@@ -94,9 +90,9 @@ async def protected_resource():
 ### Client (TypeScript)
 
 ```typescript
-import { X402Client } from '@tvm-x402/core';
-import { UptoTronClientMechanism } from '@tvm-x402/mechanism-tron';
-import { TronClientSigner } from '@tvm-x402/signer-tron';
+import { X402Client } from '@x402-tron/core';
+import { UptoTronClientMechanism } from '@x402-tron/mechanism-tron';
+import { TronClientSigner } from '@x402-tron/signer-tron';
 
 // Initialize client
 const client = new X402Client();
@@ -146,7 +142,7 @@ app.include_router(facilitator.create_router(), prefix="")
 
 ## Architecture
 
-The tvm-x402 protocol involves three parties:
+The x402-tron protocol involves three parties:
 
 - **Client**: Entity wanting to pay for a resource
 - **Resource Server**: HTTP server providing protected resources
@@ -199,7 +195,7 @@ The `upto` scheme allows payments up to a specified amount, useful for:
 ## Project Structure
 
 ```
-tvm-x402/
+x402-tron/
 ├── python/x402/              # Python SDK
 │   ├── src/x402/
 │   │   ├── mechanisms/       # Payment mechanisms (client, server, facilitator)

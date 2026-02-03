@@ -32,13 +32,13 @@ This directory contains GitHub Actions workflows for automated testing and deplo
 #### `publish_npm.yml`
 - **Trigger**: Manual (`workflow_dispatch`)
 - **Input**: NPM tag (latest, beta, alpha)
-- **Package**: `@sun-protocol/tvm-x402`
+- **Package**: `@open-aibank/x402-tron`
 - **Protection**: Only publishes on `main` branch (dry-run on other branches)
 - **Authentication**: Uses OIDC trusted publishing (no token needed)
 
 #### `publish_pypi.yml`
 - **Trigger**: Manual (`workflow_dispatch`)
-- **Package**: `tvm-x402`
+- **Package**: `x402-tron`
 - **Protection**: Only publishes on `main` branch
 - **Authentication**: Uses OIDC trusted publishing (no token needed)
 
@@ -47,10 +47,10 @@ This directory contains GitHub Actions workflows for automated testing and deplo
 ### For NPM Publishing
 
 1. **Configure NPM Trusted Publishing**:
-   - Go to https://www.npmjs.com/settings/sun-protocol/packages/@sun-protocol/tvm-x402/access
+   - Go to https://www.npmjs.com/settings/open-aibank/packages/@open-aibank/x402-tron/access
    - Enable "Automation tokens"
    - Add GitHub Actions as trusted publisher:
-     - Repository: `sun-protocol/tvm-x402`
+     - Repository: `open-aibank/x402-tron`
      - Workflow: `publish_npm.yml`
      - Environment: `npm`
 
@@ -64,7 +64,7 @@ This directory contains GitHub Actions workflows for automated testing and deplo
 1. **Configure PyPI Trusted Publishing**:
    - Go to https://pypi.org/manage/account/publishing/
    - Add a new publisher:
-     - Repository: `sun-protocol/tvm-x402`
+     - Repository: `open-aibank/x402-tron`
      - Workflow: `publish_pypi.yml`
      - Environment: `pypi`
 

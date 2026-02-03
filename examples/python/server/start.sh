@@ -27,7 +27,7 @@ source "../../../.venv/bin/activate"
 # Uninstall old version first
 echo "Removing old installation..."
 python -m ensurepip --upgrade >/dev/null 2>&1 || true
-python -m pip uninstall tvm-x402 -y 2>/dev/null || true
+python -m pip uninstall x402-tron -y 2>/dev/null || true
 python -m pip uninstall x402 -y 2>/dev/null || true
 
 # Install dependencies
@@ -40,7 +40,7 @@ fi
 # Check installation
 echo ""
 echo "Checking installation..."
-python -m pip list | grep tvm-x402
+python -m pip list | grep x402-tron
 echo ""
 python -c "import x402; print('x402 location:', x402.__file__)"
 echo ""

@@ -1,5 +1,5 @@
 {
-  "name": "@tvm-x402/client-example",
+  "name": "@x402-tron/client-example",
   "version": "0.1.0",
   "description": "x402 TypeScript Client Example",
   "type": "module",
@@ -9,7 +9,7 @@
     "dev": "tsx watch src/main.ts"
   },
   "dependencies": {
-    "@sun-protocol/tvm-x402": "workspace:*",
+    "@open-aibank/x402-tron": "workspace:*",
     "dotenv": "^16.3.1",
     "tronweb": "^6.0.0"
   },

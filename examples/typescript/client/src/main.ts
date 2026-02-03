@@ -14,7 +14,7 @@ import {
   UptoTronClientMechanism,
   TronClientSigner,
   type SettleResponse,
-} from '@sun-protocol/tvm-x402';
+} from '@open-aibank/x402-tron';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
