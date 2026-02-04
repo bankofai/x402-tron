@@ -8,7 +8,7 @@ import time
 
 import pytest
 
-from x402.types import FeeInfo, PaymentRequirements, PaymentRequirementsExtra
+from x402_tron.types import FeeInfo, PaymentRequirements, PaymentRequirementsExtra
 
 pytestmark = pytest.mark.e2e
 
@@ -58,7 +58,7 @@ class TestPaymentExpiry:
         )
 
         # Try to access protected resource with expired payment
-        from x402.encoding import encode_payment_payload
+        from x402_tron.encoding import encode_payment_payload
         payment_header = encode_payment_payload(payload)
         status, response = await server_service.get_protected_resource(
             "/protected",
@@ -111,7 +111,7 @@ class TestPaymentExpiry:
         )
 
         # Try to access protected resource with not-yet-valid payment
-        from x402.encoding import encode_payment_payload
+        from x402_tron.encoding import encode_payment_payload
         payment_header = encode_payment_payload(payload)
         status, response = await server_service.get_protected_resource(
             "/protected",

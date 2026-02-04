@@ -4,7 +4,7 @@ Type definitions for x402 protocol
 
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 # Delivery Kind constants
 PAYMENT_ONLY = "PAYMENT_ONLY"
@@ -26,8 +26,7 @@ class PermitMeta(BaseModel):
     valid_after: int = Field(alias="validAfter")
     valid_before: int = Field(alias="validBefore")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class Payment(BaseModel):
@@ -157,9 +156,7 @@ class PaymentRequiredExtensions(BaseModel):
         None, alias="paymentPermitContext"
     )
 
-    class Config:
-        populate_by_name = True
-        extra = "allow"
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
 
 
 class PaymentRequired(BaseModel):

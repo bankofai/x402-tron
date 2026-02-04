@@ -6,7 +6,7 @@ Tests for signature validation edge cases.
 
 import pytest
 
-from x402.types import FeeInfo, PaymentRequirements, PaymentRequirementsExtra
+from x402_tron.types import FeeInfo, PaymentRequirements, PaymentRequirementsExtra
 
 pytestmark = pytest.mark.e2e
 
@@ -75,8 +75,8 @@ class TestInvalidSignature:
         generate_permit_context,
     ):
         """Test signature from different buyer with Server"""
-        from x402.mechanisms.client import UptoTronClientMechanism
-        from x402.signers.client import TronClientSigner
+        from x402_tron.mechanisms.client import UptoTronClientMechanism
+        from x402_tron.signers.client import TronClientSigner
 
         # Get requirements from server
         req_data = await server_service.get_payment_requirements()

@@ -281,7 +281,7 @@ def tron_client_signer():
     if SKIP_E2E:
         pytest.skip(SKIP_REASON)
 
-    from x402.signers.client import TronClientSigner
+    from x402_tron.signers.client import TronClientSigner
 
     return TronClientSigner.from_private_key(
         TRON_PRIVATE_KEY, network=TRON_NETWORK.split(":")[-1]
@@ -294,7 +294,7 @@ def tron_facilitator_signer():
     if SKIP_E2E:
         pytest.skip(SKIP_REASON)
 
-    from x402.signers.facilitator import TronFacilitatorSigner
+    from x402_tron.signers.facilitator import TronFacilitatorSigner
 
     return TronFacilitatorSigner.from_private_key(
         TRON_PRIVATE_KEY, network=TRON_NETWORK.split(":")[-1]
@@ -309,7 +309,7 @@ def tron_facilitator_signer():
 @pytest.fixture(scope="module")
 def tron_client_mechanism(tron_client_signer):
     """Create TRON client mechanism for payment payload creation."""
-    from x402.mechanisms.client import UptoTronClientMechanism
+    from x402_tron.mechanisms.client import UptoTronClientMechanism
 
     return UptoTronClientMechanism(tron_client_signer)
 
@@ -317,7 +317,7 @@ def tron_client_mechanism(tron_client_signer):
 @pytest.fixture(scope="module")
 def tron_facilitator_mechanism(tron_facilitator_signer):
     """Create TRON facilitator mechanism for verification and settlement."""
-    from x402.mechanisms.facilitator import UptoTronFacilitatorMechanism
+    from x402_tron.mechanisms.facilitator import UptoTronFacilitatorMechanism
 
     return UptoTronFacilitatorMechanism(
         tron_facilitator_signer,
@@ -334,7 +334,7 @@ def tron_facilitator_mechanism(tron_facilitator_signer):
 @pytest.fixture
 def payment_requirements(tron_facilitator_signer):
     """Create standard payment requirements for testing."""
-    from x402.types import FeeInfo, PaymentRequirements, PaymentRequirementsExtra
+    from x402_tron.types import FeeInfo, PaymentRequirements, PaymentRequirementsExtra
 
     return PaymentRequirements(
         scheme="exact",
@@ -356,8 +356,8 @@ def payment_requirements(tron_facilitator_signer):
 @pytest.fixture
 def generate_permit_context():
     """Factory function for generating payment permit context."""
-    from x402.types import PAYMENT_ONLY
-    from x402.utils import generate_payment_id
+    from x402_tron.types import PAYMENT_ONLY
+    from x402_tron.utils import generate_payment_id
 
     def _generate(
         kind: str = PAYMENT_ONLY,

@@ -6,7 +6,7 @@ Tests for token validation edge cases.
 
 import pytest
 
-from x402.types import FeeInfo, PaymentRequirements, PaymentRequirementsExtra
+from x402_tron.types import FeeInfo, PaymentRequirements, PaymentRequirementsExtra
 
 pytestmark = pytest.mark.e2e
 

@@ -6,7 +6,7 @@ Tests for PAYMENT_ONLY mode endpoint.
 
 import pytest
 
-from x402.types import (
+from x402_tron.types import (
     FeeInfo,
     PAYMENT_ONLY,
     PaymentRequirements,

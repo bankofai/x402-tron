@@ -8,13 +8,13 @@ import time
 
 import pytest
 
-from x402.types import (
+from x402_tron.types import (
     FeeInfo,
     PAYMENT_ONLY,
     PaymentRequirements,
     PaymentRequirementsExtra,
 )
-from x402.utils import generate_payment_id
+from x402_tron.utils import generate_payment_id
 
 pytestmark = pytest.mark.e2e
 

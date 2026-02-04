@@ -6,7 +6,7 @@ Tests for payment validation edge cases.
 
 import pytest
 
-from x402.types import (
+from x402_tron.types import (
     FeeInfo,
     PAYMENT_ONLY,
     PaymentRequirements,

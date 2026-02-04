@@ -6,8 +6,8 @@ Tests for complete end-to-end payment flows.
 
 import pytest
 
-from x402.encoding import encode_payment_payload
-from x402.types import (
+from x402_tron.encoding import encode_payment_payload
+from x402_tron.types import (
     FeeInfo,
     PAYMENT_ONLY,
     PaymentRequirements,
