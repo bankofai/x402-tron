@@ -82,7 +82,6 @@ def valid_payload(nile_requirements):
     )
 
 
-'''
 class TestFacilitatorSettle:
     """Facilitator settle 执行测试"""
 
@@ -121,4 +120,3 @@ class TestFacilitatorSettle:
 
         assert result.success is False
         assert result.error_reason == "transaction_failed"
-'''
