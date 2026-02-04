@@ -73,7 +73,9 @@ class TestClientAuthorization:
         assert call_args[0][2] == "tron:nile"  # network
 
     @pytest.mark.anyio
-    async def test_allowance_amount_includes_fee(self, mock_signer, nile_requirements, permit_context):
+    async def test_allowance_amount_includes_fee(
+        self, mock_signer, nile_requirements, permit_context
+    ):
         """测试授权金额包含费用"""
         mechanism = UptoTronClientMechanism(mock_signer)
 

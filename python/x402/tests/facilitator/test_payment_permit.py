@@ -91,7 +91,9 @@ class TestFacilitatorSettle:
         mock_signer.write_contract.assert_called_once()
 
     @pytest.mark.anyio
-    async def test_settle_calls_permit_transfer_from(self, mock_signer, valid_payload, nile_requirements):
+    async def test_settle_calls_permit_transfer_from(
+        self, mock_signer, valid_payload, nile_requirements
+    ):
         """测试 settle 调用 permitTransferFrom 方法"""
         mechanism = UptoTronFacilitatorMechanism(mock_signer)
 
