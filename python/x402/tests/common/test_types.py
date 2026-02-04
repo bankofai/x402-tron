@@ -1,4 +1,3 @@
-
 from x402.types import (
     Delivery,
     Fee,

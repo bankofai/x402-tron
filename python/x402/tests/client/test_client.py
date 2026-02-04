@@ -1,4 +1,3 @@
-
 import pytest
 
 from x402.clients import X402Client

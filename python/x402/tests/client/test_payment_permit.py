@@ -1,5 +1,3 @@
-
-import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -56,16 +54,15 @@ def permit_context():
 class TestClientAuthorization:
     """客户端授权测试"""
 
-    def test_ensure_allowance_called(self, mock_signer, nile_requirements, permit_context):
+    @pytest.mark.anyio
+    async def test_ensure_allowance_called(self, mock_signer, nile_requirements, permit_context):
         """测试创建支付载荷时调用 ensure_allowance"""
         mechanism = UptoTronClientMechanism(mock_signer)
 
-        asyncio.get_event_loop().run_until_complete(
-            mechanism.create_payment_payload(
-                nile_requirements,
-                "https://api.example.com/resource",
-                extensions=permit_context,
-            )
+        await mechanism.create_payment_payload(
+            nile_requirements,
+            "https://api.example.com/resource",
+            extensions=permit_context,
         )
 
         # 验证调用了 ensure_allowance
@@ -75,16 +72,15 @@ class TestClientAuthorization:
         assert call_args[0][1] == 1010000  # amount + fee
         assert call_args[0][2] == "tron:nile"  # network
 
-    def test_allowance_amount_includes_fee(self, mock_signer, nile_requirements, permit_context):
+    @pytest.mark.anyio
+    async def test_allowance_amount_includes_fee(self, mock_signer, nile_requirements, permit_context):
         """测试授权金额包含费用"""
         mechanism = UptoTronClientMechanism(mock_signer)
 
-        asyncio.get_event_loop().run_until_complete(
-            mechanism.create_payment_payload(
-                nile_requirements,
-                "https://api.example.com/resource",
-                extensions=permit_context,
-            )
+        await mechanism.create_payment_payload(
+            nile_requirements,
+            "https://api.example.com/resource",
+            extensions=permit_context,
         )
 
         # amount=1000000 + fee=10000 = 1010000

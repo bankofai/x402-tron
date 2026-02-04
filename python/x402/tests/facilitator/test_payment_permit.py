@@ -1,5 +1,3 @@
-
-import asyncio
 import time
 from unittest.mock import AsyncMock, MagicMock
 
@@ -80,38 +78,35 @@ def valid_payload(nile_requirements):
 class TestFacilitatorSettle:
     """Facilitator settle 执行测试"""
 
-    def test_settle_success(self, mock_signer, valid_payload, nile_requirements):
+    @pytest.mark.anyio
+    async def test_settle_success(self, mock_signer, valid_payload, nile_requirements):
         """测试成功结算"""
         mechanism = UptoTronFacilitatorMechanism(mock_signer)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            mechanism.settle(valid_payload, nile_requirements)
-        )
+        result = await mechanism.settle(valid_payload, nile_requirements)
 
         assert result.success is True
         assert result.transaction == "txhash123456"
         assert result.network == "tron:nile"
         mock_signer.write_contract.assert_called_once()
 
-    def test_settle_calls_permit_transfer_from(self, mock_signer, valid_payload, nile_requirements):
+    @pytest.mark.anyio
+    async def test_settle_calls_permit_transfer_from(self, mock_signer, valid_payload, nile_requirements):
         """测试 settle 调用 permitTransferFrom 方法"""
         mechanism = UptoTronFacilitatorMechanism(mock_signer)
 
-        asyncio.get_event_loop().run_until_complete(
-            mechanism.settle(valid_payload, nile_requirements)
-        )
+        await mechanism.settle(valid_payload, nile_requirements)
 
         call_args = mock_signer.write_contract.call_args
         assert call_args.kwargs["method"] == "permitTransferFrom"
 
-    def test_settle_transaction_failed(self, mock_signer, valid_payload, nile_requirements):
+    @pytest.mark.anyio
+    async def test_settle_transaction_failed(self, mock_signer, valid_payload, nile_requirements):
         """测试交易失败"""
         mock_signer.write_contract = AsyncMock(return_value=None)
         mechanism = UptoTronFacilitatorMechanism(mock_signer)
 
-        result = asyncio.get_event_loop().run_until_complete(
-            mechanism.settle(valid_payload, nile_requirements)
-        )
+        result = await mechanism.settle(valid_payload, nile_requirements)
 
         assert result.success is False
         assert result.error_reason == "transaction_failed"
