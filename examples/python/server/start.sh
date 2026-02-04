@@ -42,18 +42,18 @@ echo ""
 echo "Checking installation..."
 python -m pip list | grep x402-tron
 echo ""
-python -c "import x402; print('x402 location:', x402.__file__)"
+python -c "import x402_tron; print('x402_tron location:', x402_tron.__file__)"
 echo ""
 
 # Verify installation
-if ! python -c "from x402.server import X402Server" 2>&1; then
+if ! python -c "from x402_tron.server import X402Server" 2>&1; then
     echo ""
     echo "Error: Failed to import X402Server"
-    echo "Checking what's available in x402.server module:"
-    python -c "import x402.server; print(dir(x402.server))" 2>&1 || echo "Cannot import x402.server at all"
+    echo "Checking what's available in x402_tron.server module:"
+    python -c "import x402_tron.server; print(dir(x402_tron.server))" 2>&1 || echo "Cannot import x402_tron.server at all"
     echo ""
-    echo "Checking x402 package structure:"
-    python -c "import x402; import os; print(os.listdir(os.path.dirname(x402.__file__)))" 2>&1
+    echo "Checking x402_tron package structure:"
+    python -c "import x402_tron; import os; print(os.listdir(os.path.dirname(x402_tron.__file__)))" 2>&1
     exit 1
 fi
 

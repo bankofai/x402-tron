@@ -50,11 +50,11 @@ fi
 python -m pip install -e ../../../python/x402[tron,fastapi]
 
 # Verify installation
-if ! python -c "from x402.facilitator import X402Facilitator" 2>/dev/null; then
-    echo "Error: Failed to import X402Facilitator"
+if ! python -c "from x402_tron.mechanisms.facilitator import UptoTronFacilitatorMechanism" 2>/dev/null; then
+    echo "Error: Failed to import x402_tron.mechanisms.facilitator"
     echo "Please check the installation:"
     echo "  pip list | grep x402-tron"
-    echo "  python -c 'import x402; print(x402.__file__)'"
+    echo "  python -c 'import x402_tron; print(x402_tron.__file__)'"
     exit 1
 fi
 
