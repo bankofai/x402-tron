@@ -36,8 +36,7 @@ class Payment(BaseModel):
     max_pay_amount: str = Field(alias="maxPayAmount")
     pay_to: str = Field(alias="payTo")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class Fee(BaseModel):
@@ -46,8 +45,7 @@ class Fee(BaseModel):
     fee_to: str = Field(alias="feeTo")
     fee_amount: str = Field(alias="feeAmount")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class Delivery(BaseModel):
@@ -57,8 +55,7 @@ class Delivery(BaseModel):
     mini_receive_amount: str = Field(alias="miniReceiveAmount")
     token_id: str = Field(alias="tokenId")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaymentPermit(BaseModel):
@@ -79,8 +76,7 @@ class FeeInfo(BaseModel):
     fee_to: str = Field(alias="feeTo")
     fee_amount: str = Field(alias="feeAmount")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaymentRequirementsExtra(BaseModel):
@@ -102,8 +98,7 @@ class PaymentRequirements(BaseModel):
     max_timeout_seconds: Optional[int] = Field(None, alias="maxTimeoutSeconds")
     extra: Optional[PaymentRequirementsExtra] = None
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaymentPermitContextMeta(BaseModel):
@@ -115,8 +110,7 @@ class PaymentPermitContextMeta(BaseModel):
     valid_after: int = Field(alias="validAfter")
     valid_before: int = Field(alias="validBefore")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaymentPermitContextDelivery(BaseModel):
@@ -126,8 +120,7 @@ class PaymentPermitContextDelivery(BaseModel):
     mini_receive_amount: str = Field(alias="miniReceiveAmount")
     token_id: str = Field(alias="tokenId")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaymentPermitContext(BaseModel):
@@ -145,8 +138,7 @@ class ResourceInfo(BaseModel):
     description: Optional[str] = None
     mime_type: Optional[str] = Field(None, alias="mimeType")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaymentRequiredExtensions(BaseModel):
@@ -168,8 +160,7 @@ class PaymentRequired(BaseModel):
     accepts: list[PaymentRequirements]
     extensions: Optional[PaymentRequiredExtensions] = None
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaymentPayloadData(BaseModel):
@@ -179,8 +170,7 @@ class PaymentPayloadData(BaseModel):
     merchant_signature: Optional[str] = Field(None, alias="merchantSignature")
     payment_permit: PaymentPermit = Field(alias="paymentPermit")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PaymentPayload(BaseModel):
@@ -192,8 +182,7 @@ class PaymentPayload(BaseModel):
     payload: PaymentPayloadData
     extensions: Optional[dict[str, Any]] = None
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class VerifyResponse(BaseModel):
@@ -202,8 +191,7 @@ class VerifyResponse(BaseModel):
     is_valid: bool = Field(alias="isValid")
     invalid_reason: Optional[str] = Field(None, alias="invalidReason")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class TransactionInfo(BaseModel):
@@ -222,8 +210,7 @@ class SettleResponse(BaseModel):
     network: Optional[str] = None
     error_reason: Optional[str] = Field(None, alias="errorReason")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class SupportedKind(BaseModel):
@@ -233,8 +220,7 @@ class SupportedKind(BaseModel):
     scheme: str
     network: str
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class SupportedFee(BaseModel):
@@ -243,8 +229,7 @@ class SupportedFee(BaseModel):
     fee_to: str = Field(alias="feeTo")
     pricing: Literal["per_accept", "flat"]
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class SupportedResponse(BaseModel):
@@ -262,5 +247,4 @@ class FeeQuoteResponse(BaseModel):
     network: str
     expires_at: Optional[int] = Field(None, alias="expiresAt")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
