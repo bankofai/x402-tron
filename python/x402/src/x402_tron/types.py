@@ -34,7 +34,7 @@ class Payment(BaseModel):
     """Payment information"""
 
     pay_token: str = Field(alias="payToken")
-    max_pay_amount: str = Field(alias="maxPayAmount")
+    pay_amount: str = Field(alias="payAmount")
     pay_to: str = Field(alias="payTo")
 
     class Config:
@@ -254,7 +254,10 @@ class SupportedResponse(BaseModel):
     """Supported response from facilitator"""
 
     kinds: list[SupportedKind]
-    fee: Optional[SupportedFee] = None
+    fee: SupportedFee  # Required - facilitator must configure fee with non-empty feeTo
+
+    class Config:
+        populate_by_name = True
 
 
 class FeeQuoteResponse(BaseModel):

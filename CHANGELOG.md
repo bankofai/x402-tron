@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-02-05
+
+### Added
+- Multi-network facilitator support (Nile and Mainnet simultaneously)
+- Async transaction verification with AsyncTron client
+
+### Changed
+- Updated PaymentPermit contract addresses:
+  - Mainnet: `THnW1E6yQWgx9P3QtSqWw2t3qGwH35jARg`
+  - Shasta: `TVjYLoXatyMkemxzeB9M8ZE3uGttR9QZJ8`
+  - Nile: `TQr1nSWDLWgmJ3tkbFZANnaFcB5ci7Hvxa`
+- Server automatically fetches facilitator address from `/supported` endpoint
+- Removed `max_amount` filter from `PaymentRequirementsFilter`
+- All tronpy operations converted to AsyncTron with proper async/await
+- Simplified transaction verification to status check only (60s timeout)
+
+### Fixed
+- Fixed on-chain transaction failure: `permit.caller` now matches facilitator address
+- Fixed contract ABI to match new PaymentPermit deployment
+- Fixed all linting and formatting issues
+- Fixed test imports to use new mechanism names
+
+[0.1.5]: https://github.com/open-aibank/x402-tron/releases/tag/v0.1.5
+
 ## [0.1.4] - 2026-02-05
 
 ### Added

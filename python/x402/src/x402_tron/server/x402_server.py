@@ -96,9 +96,9 @@ class X402Server:
 
     def _register_default_tron_mechanisms(self) -> None:
         """Register default TRON mechanisms for all networks"""
-        from x402_tron.mechanisms.server import UptoTronServerMechanism
+        from x402_tron.mechanisms.server import ExactTronServerMechanism
 
-        tron_mechanism = UptoTronServerMechanism()
+        tron_mechanism = ExactTronServerMechanism()
         self.register(NetworkConfig.TRON_MAINNET, tron_mechanism)
         self.register(NetworkConfig.TRON_SHASTA, tron_mechanism)
         self.register(NetworkConfig.TRON_NILE, tron_mechanism)
@@ -148,6 +148,10 @@ class X402Server:
 
         if self._facilitators:
             facilitator = self._facilitators[0]
+            # Fetch and cache facilitator address for use in create_payment_required_response
+            await facilitator.fetch_facilitator_address()
+
+            # Get fee quote from facilitator (fee is required)
             fee_quote = await facilitator.fee_quote(requirements)
             if fee_quote:
                 if requirements.extra is None:
@@ -168,6 +172,7 @@ class X402Server:
         nonce: str | None = None,
         valid_after: int | None = None,
         valid_before: int | None = None,
+        caller: str | None = None,
     ) -> PaymentRequired:
         """Create 402 Payment Required response.
 
@@ -178,6 +183,7 @@ class X402Server:
             nonce: Idempotency nonce
             valid_after: Valid from timestamp
             valid_before: Valid until timestamp
+            caller: Caller address (facilitator address that will execute the permit)
 
         Returns:
             PaymentRequired response
@@ -188,6 +194,17 @@ class X402Server:
         from x402_tron.utils import generate_payment_id
 
         now = int(time.time())
+
+        # Get caller (facilitator address) from first facilitator if not provided
+        effective_caller = caller
+        if effective_caller is None and self._facilitators:
+            effective_caller = self._facilitators[0].facilitator_address
+            # Log for debugging
+            import logging
+
+            logger = logging.getLogger(__name__)
+            logger.info(f"[CALLER] Setting caller from facilitator: {effective_caller}")
+
         extensions = PaymentRequiredExtensions(
             paymentPermitContext=PaymentPermitContext(
                 meta=PaymentPermitContextMeta(
@@ -197,6 +214,7 @@ class X402Server:
                     validAfter=valid_after or now,
                     validBefore=valid_before or (now + 3600),
                 ),
+                caller=effective_caller,
                 delivery=PaymentPermitContextDelivery(
                     receiveToken=TRON_ZERO_ADDRESS,
                     miniReceiveAmount="0",
@@ -280,7 +298,7 @@ class X402Server:
             return False
         if permit.payment.pay_to != requirements.pay_to:
             return False
-        if int(permit.payment.max_pay_amount) < int(requirements.amount):
+        if int(permit.payment.pay_amount) < int(requirements.amount):
             return False
 
         return True

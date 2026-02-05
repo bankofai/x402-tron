@@ -13,9 +13,9 @@ export const CHAIN_IDS: Record<string, number> = {
 
 /** PaymentPermit contract addresses */
 export const PAYMENT_PERMIT_ADDRESSES: Record<string, string> = {
-  'tron:mainnet': 'TYWGPC53cD44MQW54tH11kNYxLW5eu5zGy',
-  'tron:shasta': 'TFiMDs3KeDiwcB5rRBqFHYaNHFZGxEJ89U',
-  'tron:nile': 'TCR6EaRtLRYjWPr7YWHqt4uL81rfevtE8p',
+  'tron:mainnet': 'THnW1E6yQWgx9P3QtSqWw2t3qGwH35jARg',
+  'tron:shasta': 'TVjYLoXatyMkemxzeB9M8ZE3uGttR9QZJ8',
+  'tron:nile': 'TQr1nSWDLWgmJ3tkbFZANnaFcB5ci7Hvxa',
 };
 
 /** Zero address for TRON */
