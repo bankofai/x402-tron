@@ -1,5 +1,5 @@
 """
-FastAPI 中间件用于 x402 支付处理
+FastAPI middleware for x402 payment processing
 """
 
 from functools import wraps
@@ -22,9 +22,9 @@ PAYMENT_RESPONSE_HEADER = "PAYMENT-RESPONSE"
 
 class X402Middleware:
     """
-    FastAPI 中间件用于自动 402 支付处理。
+    FastAPI middleware for automatic 402 payment handling.
 
-    用法:
+    Usage:
         app = FastAPI()
         server = X402Server().add_facilitator(...)
         middleware = X402Middleware(server)
@@ -48,18 +48,18 @@ class X402Middleware:
         delivery_mode: str = "PAYMENT_ONLY",
     ) -> Callable:
         """
-        装饰器用于使用支付要求保护端点。
+        Decorator to protect endpoints with payment requirements.
 
-        参数:
-            price: 价格字符串（例如 "100 USDC"）
-            network: 网络标识符
-            pay_to: 支付接收地址
-            scheme: 支付方案
-            valid_for: 支付有效期（秒）
-            delivery_mode: 交付模式
+        Args:
+            price: Price string (e.g. "100 USDC")
+            network: Network identifier
+            pay_to: Payment recipient address
+            scheme: Payment scheme
+            valid_for: Payment validity period (seconds)
+            delivery_mode: Delivery mode
 
-        返回:
-            装饰后的函数
+        Returns:
+            Decorated function
         """
         config = ResourceConfig(
             scheme=scheme,
@@ -202,7 +202,7 @@ class X402Middleware:
         config: ResourceConfig,
         error: str | None = None,
     ) -> JSONResponse:
-        """返回 402 需要支付响应"""
+        """Return 402 payment required response"""
         requirements = await self._server.build_payment_requirements(config)
 
         payment_required = self._server.create_payment_required_response(
@@ -228,9 +228,9 @@ def x402_protected(
     **kwargs: Any,
 ) -> Callable:
     """
-    保护端点的便捷装饰器。
+    Convenience decorator to protect endpoints.
 
-    用法:
+    Usage:
         @app.get("/protected")
         @x402_protected(server, price="100 USDC", network="eip155:8453", pay_to="0x...")
         async def protected_endpoint():

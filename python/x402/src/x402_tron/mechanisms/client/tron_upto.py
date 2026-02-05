@@ -1,5 +1,5 @@
 """
-UptoTronClientMechanism - "upto" 支付方案的 TRON 客户端机制
+UptoTronClientMechanism - TRON client mechanism for "upto" payment scheme
 """
 
 from x402_tron.address import AddressConverter, TronAddressConverter
@@ -7,7 +7,7 @@ from x402_tron.mechanisms.client.base_upto import BaseUptoClientMechanism
 
 
 class UptoTronClientMechanism(BaseUptoClientMechanism):
-    """upto 支付方案的 TRON 客户端机制"""
+    """TRON client mechanism for upto payment scheme"""
 
     def _get_address_converter(self) -> AddressConverter:
         return TronAddressConverter()

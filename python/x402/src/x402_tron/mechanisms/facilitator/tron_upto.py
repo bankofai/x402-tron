@@ -1,5 +1,5 @@
 """
-UptoTronFacilitatorMechanism - "upto" 支付方案的 TRON facilitator 机制
+UptoTronFacilitatorMechanism - TRON facilitator mechanism for "upto" payment scheme
 """
 
 from typing import Any
@@ -12,7 +12,7 @@ from x402_tron.types import KIND_MAP, PaymentPermit, PaymentRequirements
 
 
 class UptoTronFacilitatorMechanism(BaseUptoFacilitatorMechanism):
-    """upto 支付方案的 TRON facilitator 机制"""
+    """TRON facilitator mechanism for upto payment scheme"""
 
     def _get_address_converter(self) -> AddressConverter:
         return TronAddressConverter()
@@ -79,7 +79,7 @@ class UptoTronFacilitatorMechanism(BaseUptoFacilitatorMechanism):
         signature: str,
         requirements: PaymentRequirements,
     ) -> str | None:
-        """仅支付结算（无链上交付）"""
+        """Payment only settlement (no on-chain delivery)"""
         contract_address = NetworkConfig.get_payment_permit_address(requirements.network)
         self._logger.info(f"Calling permitTransferFrom on contract={contract_address}")
 

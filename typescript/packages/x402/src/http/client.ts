@@ -1,5 +1,5 @@
 /**
- * X402FetchClient - 基于 Fetch 的具有自动 402 支付处理的 HTTP 客户端
+ * X402FetchClient - Fetch-based HTTP client with automatic 402 payment handling
  */
 
 import {
@@ -11,13 +11,13 @@ import {
   decodePaymentPayload,
 } from '../index.js';
 
-/** x402 协议的 HTTP 头 */
+/** HTTP headers for x402 protocol */
 const PAYMENT_SIGNATURE_HEADER = 'PAYMENT-SIGNATURE';
 const PAYMENT_REQUIRED_HEADER = 'PAYMENT-REQUIRED';
 const PAYMENT_RESPONSE_HEADER = 'PAYMENT-RESPONSE';
 
 /**
- * 基于 Fetch 的具有自动 402 支付处理的 HTTP 客户端
+ * Fetch-based HTTP client with automatic 402 payment handling
  */
 export class X402FetchClient {
   private x402Client: X402Client;
@@ -32,7 +32,7 @@ export class X402FetchClient {
   }
 
   /**
-   * 发起具有自动 402 支付处理的请求
+   * Make request with automatic 402 payment handling
    */
   async request(
     url: string,
@@ -60,21 +60,21 @@ export class X402FetchClient {
   }
 
   /**
-   * 带支付处理的 GET 请求
+   * GET request with payment handling
    */
   async get(url: string, init?: RequestInit): Promise<Response> {
     return this.request(url, { ...init, method: 'GET' });
   }
 
   /**
-   * 带支付处理的 POST 请求
+   * POST request with payment handling
    */
   async post(url: string, body?: RequestInit['body'], init?: RequestInit): Promise<Response> {
     return this.request(url, { ...init, method: 'POST', body });
   }
 
   /**
-   * 从 402 响应解析 PaymentRequired
+   * Parse PaymentRequired from 402 response
    */
   private async parsePaymentRequired(response: Response): Promise<PaymentRequired | null> {
     const headerValue = response.headers.get(PAYMENT_REQUIRED_HEADER);
@@ -82,7 +82,7 @@ export class X402FetchClient {
       try {
         return decodePaymentPayload<PaymentRequired>(headerValue);
       } catch {
-        // 继续解析主体
+        // Continue to parse body
       }
     }
 
@@ -92,14 +92,14 @@ export class X402FetchClient {
         return body as unknown as PaymentRequired;
       }
     } catch {
-      // 无法解析
+      // Unable to parse
     }
 
     return null;
   }
 
   /**
-   * 使用支付载荷重试请求
+   * Retry request with payment payload
    */
   private async retryWithPayment(
     url: string,

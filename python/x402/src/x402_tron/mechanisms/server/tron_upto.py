@@ -1,5 +1,5 @@
 """
-UptoTronServerMechanism - "upto" 支付方案的 TRON 服务器机制
+UptoTronServerMechanism - TRON server mechanism for "upto" payment scheme
 """
 
 from typing import Any
@@ -9,13 +9,13 @@ from x402_tron.types import KIND_MAP
 
 
 class UptoTronServerMechanism(BaseUptoServerMechanism):
-    """upto 支付方案的 TRON 服务器机制"""
+    """TRON server mechanism for upto payment scheme"""
 
     def _get_network_prefix(self) -> str:
         return "tron:"
 
     def _validate_address_format(self, address: str) -> bool:
-        """验证 TRON 地址格式 (以 T 开头)"""
+        """Validate TRON address format (starts with T)"""
         return address.startswith("T")
 
     def _get_verifying_contract(self, permit_address: str) -> str:
