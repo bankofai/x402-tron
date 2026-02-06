@@ -84,19 +84,20 @@ Clients handle the `402` challenge-response loop automatically using the SDK.
 
 **TypeScript Example:**
 ```typescript
-import { X402Client, ExactTronClientMechanism, TronClientSigner } from '@open-aibank/x402-tron';
+import { X402Client, X402FetchClient, ExactTronClientMechanism, TronClientSigner } from '@open-aibank/x402-tron';
 import { TronWeb } from 'tronweb';
 
 // Setup TronWeb and Signer
 const tronWeb = new TronWeb({ fullHost: 'https://nile.trongrid.io', privateKey: '...' });
 const signer = TronClientSigner.withPrivateKey(tronWeb, '...', 'nile');
 
-// Register Mechanism
-const client = new X402Client();
-client.register('tron:*', new ExactTronClientMechanism(signer));
+// Register Mechanism and create Fetch Client
+const x402Client = new X402Client();
+x402Client.register('tron:*', new ExactTronClientMechanism(signer));
+const client = new X402FetchClient(x402Client);
 
 // The SDK handles the 402 flow automatically
-const response = await client.fetch('https://api.example.com/protected');
+const response = await client.get('https://api.example.com/protected');
 const data = await response.json();
 ```
 
