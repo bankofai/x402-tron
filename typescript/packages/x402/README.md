@@ -358,6 +358,7 @@ await signer.ensureAllowance(tokenAddress, amount, network, 'auto');
 
 - **Repository**: https://github.com/open-aibank/x402-tron
 - **Issues**: https://github.com/open-aibank/x402-tron/issues
+- **Contributing**: https://github.com/open-aibank/CONTRIBUTING.md
 - **Documentation**: https://github.com/open-aibank/x402-tron#readme
 - **TRON Documentation**: https://developers.tron.network/
 - **TIP-712 Specification**: https://github.com/tronprotocol/tips/blob/master/tip-712.md

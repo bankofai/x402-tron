@@ -41,3 +41,4 @@ client = X402HttpClient(http_client=http_client, x402_client=x402_client)
 
 - Repository: https://github.com/open-aibank/x402-tron
 - Issues: https://github.com/open-aibank/x402-tron/issues
+- Contributing: https://github.com/open-aibank/CONTRIBUTING.md
