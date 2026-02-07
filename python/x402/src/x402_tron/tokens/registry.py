@@ -5,7 +5,10 @@ Token registry - Centralized management of token configurations for all networks
 from dataclasses import dataclass
 from typing import Any
 
+from x402_tron.address.converter import TronAddressConverter
 from x402_tron.exceptions import UnknownTokenError
+
+_converter = TronAddressConverter()
 
 
 @dataclass
@@ -72,6 +75,7 @@ class TokenRegistry:
         """
         if network not in cls._tokens:
             cls._tokens[network] = {}
+        token.address = _converter.normalize(token.address)
         cls._tokens[network][token.symbol.upper()] = token
 
     @classmethod
@@ -91,8 +95,9 @@ class TokenRegistry:
     def find_by_address(cls, network: str, address: str) -> TokenInfo | None:
         """Find token information by address"""
         tokens = cls._tokens.get(network, {})
+        normalized = _converter.normalize(address)
         for info in tokens.values():
-            if info.address == address:
+            if info.address == normalized:
                 return info
         return None
 
