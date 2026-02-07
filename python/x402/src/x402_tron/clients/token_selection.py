@@ -55,10 +55,7 @@ def _normalized_cost(req: PaymentRequirements) -> float:
          1_000_000_000_000_000_000 raw with 18 decimals -> 1.0
     """
     decimals = _get_decimals(req)
-    total = int(req.amount)
-    if req.extra and req.extra.fee and req.extra.fee.fee_amount:
-        total += int(req.extra.fee.fee_amount)
-    return total / (10**decimals)
+    return int(req.amount) / (10**decimals)
 
 
 class DefaultTokenSelectionStrategy:

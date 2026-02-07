@@ -20,11 +20,7 @@ function getDecimals(req: PaymentRequirements): number {
 
 function normalizedCost(req: PaymentRequirements): number {
   const decimals = getDecimals(req);
-  let total = BigInt(req.amount);
-  if (req.extra?.fee?.feeAmount) {
-    total += BigInt(req.extra.fee.feeAmount);
-  }
-  return Number(total) / 10 ** decimals;
+  return Number(BigInt(req.amount)) / 10 ** decimals;
 }
 
 /**

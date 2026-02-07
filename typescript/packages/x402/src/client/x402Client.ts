@@ -9,6 +9,7 @@ import type {
   PaymentPayload,
   PaymentPermitContext,
 } from '../types/index.js';
+import { DefaultTokenSelectionStrategy } from './tokenSelection.js';
 import type { TokenSelectionStrategy } from './tokenSelection.js';
 
 /** Client mechanism interface */
@@ -137,7 +138,7 @@ export class X402Client {
       return this.tokenStrategy.select(candidates);
     }
 
-    return candidates[0];
+    return new DefaultTokenSelectionStrategy().select(candidates);
   }
 
   /**
