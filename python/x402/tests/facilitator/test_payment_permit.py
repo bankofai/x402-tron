@@ -64,7 +64,7 @@ def valid_payload(nile_requirements):
                     payAmount="1000000",
                     payTo="TTestMerchantAddress",
                 ),
-                fee=Fee(feeTo="TTestFacilitator", feeAmount="10000"),
+                fee=Fee(feeTo="TTestFacilitator", feeAmount="1000000"),
                 delivery=Delivery(
                     receiveToken="T0000000000000000000000000000000",
                     miniReceiveAmount="0",
@@ -112,3 +112,23 @@ class TestFacilitatorSettle:
 
         assert result.success is False
         assert result.error_reason == "transaction_failed"
+
+    @pytest.mark.anyio
+    async def test_settle_fee_amount_mismatch(self, mock_signer, valid_payload, nile_requirements):
+        valid_payload.payload.payment_permit.fee.fee_amount = "0"
+        mechanism = ExactTronFacilitatorMechanism(mock_signer)
+
+        result = await mechanism.settle(valid_payload, nile_requirements)
+
+        assert result.success is False
+        assert result.error_reason == "fee_amount_mismatch"
+
+    @pytest.mark.anyio
+    async def test_settle_fee_to_mismatch(self, mock_signer, valid_payload, nile_requirements):
+        valid_payload.payload.payment_permit.fee.fee_to = "TWrongAddress"
+        mechanism = ExactTronFacilitatorMechanism(mock_signer)
+
+        result = await mechanism.settle(valid_payload, nile_requirements)
+
+        assert result.success is False
+        assert result.error_reason == "fee_to_mismatch"

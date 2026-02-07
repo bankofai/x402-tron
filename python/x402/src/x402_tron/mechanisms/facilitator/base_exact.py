@@ -209,6 +209,14 @@ class BaseExactFacilitatorMechanism(FacilitatorMechanism):
             )
             return "token_mismatch"
 
+        # Fee validation: compare against facilitator's own configured fee
+        if permit.fee.fee_to.lower() != self._fee_to.lower():
+            self._logger.warning(f"FeeTo mismatch: {permit.fee.fee_to} != {self._fee_to}")
+            return "fee_to_mismatch"
+        if int(permit.fee.fee_amount) < self._base_fee:
+            self._logger.warning(f"FeeAmount too low: {permit.fee.fee_amount} < {self._base_fee}")
+            return "fee_amount_mismatch"
+
         now = int(time.time())
         if permit.meta.valid_before < now:
             self._logger.warning(
