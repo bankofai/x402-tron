@@ -142,7 +142,9 @@ class X402Client:
         if self._token_strategy:
             selected = await self._token_strategy.select(candidates)
         else:
-            selected = candidates[0]
+            from x402_tron.clients.token_selection import DefaultTokenSelectionStrategy
+
+            selected = await DefaultTokenSelectionStrategy().select(candidates)
 
         logger.info(
             "Selected payment requirement: network=%s, scheme=%s, amount=%s",
