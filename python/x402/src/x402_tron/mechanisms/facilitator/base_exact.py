@@ -91,7 +91,7 @@ class BaseExactFacilitatorMechanism(FacilitatorMechanism):
         accept: PaymentRequirements,
         context: dict[str, Any] | None = None,
     ) -> FeeQuoteResponse:
-        """Calculate fee quote based on gas estimation"""
+        """Calculate fee quote for a single payment requirement."""
         fee_amount = str(self._get_base_fee(accept.asset, accept.network))
         self._logger.info(
             f"Fee quote requested: network={accept.network}, "

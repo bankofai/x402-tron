@@ -136,7 +136,7 @@ class X402Middleware:
                         status_code=400,
                     )
 
-                requirements = await self._server.build_payment_requirements(config)
+                requirements = (await self._server.build_payment_requirements([config]))[0]
 
                 verify_result = await self._server.verify_payment(payload, requirements)
                 if not verify_result.is_valid:
@@ -273,10 +273,7 @@ class X402Middleware:
         error: str | None = None,
     ) -> JSONResponse:
         """Return 402 payment required response"""
-        requirements_list = []
-        for cfg in configs:
-            req = await self._server.build_payment_requirements(cfg)
-            requirements_list.append(req)
+        requirements_list = await self._server.build_payment_requirements(configs)
 
         payment_required = self._server.create_payment_required_response(
             requirements=requirements_list,
