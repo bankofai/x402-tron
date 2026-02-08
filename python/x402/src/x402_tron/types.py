@@ -241,7 +241,9 @@ class FeeQuoteResponse(BaseModel):
 
     fee: FeeInfo
     pricing: str
+    scheme: str
     network: str
+    asset: str
     expires_at: Optional[int] = Field(None, alias="expiresAt")
 
     class Config:

@@ -79,20 +79,38 @@ class BaseExactFacilitatorMechanism(FacilitatorMechanism):
     def scheme(self) -> str:
         return "exact"
 
-    def _get_base_fee(self, token_address: str, network: str) -> int:
-        """Get base fee for a token address by looking up its symbol."""
+    def _get_base_fee(self, token_address: str, network: str) -> int | None:
+        """Get base fee for a token address by looking up its symbol.
+
+        Returns:
+            Fee amount, or None if the token is not supported.
+        """
         token_info = TokenRegistry.find_by_address(network, token_address)
-        if token_info and token_info.symbol.upper() in self._base_fee_map:
-            return self._base_fee_map[token_info.symbol.upper()]
-        return DEFAULT_BASE_FEE
+        if token_info is None:
+            return None
+        symbol = token_info.symbol.upper()
+        if symbol not in self._base_fee_map:
+            return None
+        return self._base_fee_map[symbol]
 
     async def fee_quote(
         self,
         accept: PaymentRequirements,
         context: dict[str, Any] | None = None,
-    ) -> FeeQuoteResponse:
-        """Calculate fee quote for a single payment requirement."""
-        fee_amount = str(self._get_base_fee(accept.asset, accept.network))
+    ) -> FeeQuoteResponse | None:
+        """Calculate fee quote for a single payment requirement.
+
+        Returns:
+            FeeQuoteResponse, or None if the token is not supported.
+        """
+        base_fee = self._get_base_fee(accept.asset, accept.network)
+        if base_fee is None:
+            self._logger.warning(
+                f"Unsupported token: asset={accept.asset}, network={accept.network}"
+            )
+            return None
+
+        fee_amount = str(base_fee)
         self._logger.info(
             f"Fee quote requested: network={accept.network}, "
             f"amount={accept.amount}, fee={fee_amount}"
@@ -103,8 +121,10 @@ class BaseExactFacilitatorMechanism(FacilitatorMechanism):
                 feeTo=self._fee_to,
                 feeAmount=fee_amount,
             ),
-            pricing="per_accept",
+            pricing="flat",
+            scheme=accept.scheme,
             network=accept.network,
+            asset=accept.asset,
             expiresAt=int(time.time()) + FEE_QUOTE_EXPIRY_SECONDS,
         )
 

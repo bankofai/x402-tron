@@ -2,12 +2,14 @@
 X402Server - Core payment server for x402 protocol
 """
 
+import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol
 
 from x402_tron.config import NetworkConfig
 from x402_tron.types import (
     PAYMENT_ONLY,
+    FeeQuoteResponse,
     PaymentPayload,
     PaymentPermitContext,
     PaymentPermitContextMeta,
@@ -72,6 +74,7 @@ class X402Server:
         Args:
             auto_register_tron: If True, automatically register TRON mechanisms for all networks
         """
+        self._logger = logging.getLogger(self.__class__.__name__)
         self._mechanisms: dict[str, ServerMechanism] = {}
         self._facilitator: "FacilitatorClient | None" = None
 
@@ -152,18 +155,30 @@ class X402Server:
             await facilitator.fetch_facilitator_address()
 
             fee_quotes = await facilitator.fee_quote(requirements_list)
-            for req, fee_quote in zip(requirements_list, fee_quotes):
-                if fee_quote:
-                    if req.extra is None:
-                        from x402_tron.types import PaymentRequirementsExtra
+            # Build lookup by (scheme, network, asset) for matching
+            quote_map: dict[tuple[str, str, str], FeeQuoteResponse] = {
+                (q.scheme, q.network, q.asset): q for q in fee_quotes
+            }
+            supported: list[PaymentRequirements] = []
+            for req in requirements_list:
+                fee_quote = quote_map.get((req.scheme, req.network, req.asset))
+                if fee_quote is None:
+                    self._logger.warning(
+                        f"Unsupported scheme/token: network={req.network}, "
+                        f"scheme={req.scheme}, asset={req.asset} (skipped)"
+                    )
+                    continue
+                if req.extra is None:
+                    from x402_tron.types import PaymentRequirementsExtra
 
-                        req.extra = PaymentRequirementsExtra()
-                    fee_quote.fee.facilitator_id = facilitator.facilitator_id
-                    req.extra.fee = fee_quote.fee
+                    req.extra = PaymentRequirementsExtra()
+                fee_quote.fee.facilitator_id = facilitator.facilitator_id
+                req.extra.fee = fee_quote.fee
+                supported.append(req)
         else:
             raise ValueError("Facilitator is not set")
 
-        return requirements_list
+        return supported
 
     def create_payment_required_response(
         self,
