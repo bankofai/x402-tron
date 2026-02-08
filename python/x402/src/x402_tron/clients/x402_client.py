@@ -105,9 +105,8 @@ class X402Client:
         """
         Select payment requirements from available options.
 
-        Applies filters, then delegates to the token selection strategy
-        if one is configured (and a signer is available). Otherwise
-        falls back to picking the first candidate.
+        Applies filters, then delegates to the configured token selection
+        strategy. Falls back to DefaultTokenSelectionStrategy if none is set.
 
         Args:
             accepts: Available payment requirements
