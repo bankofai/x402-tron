@@ -160,7 +160,7 @@ class X402Server:
                 fee_quote.fee.facilitator_id = facilitator.facilitator_id
                 requirements.extra.fee = fee_quote.fee
         else:
-            raise ValueError(f"Facilitator is not set"))
+            raise ValueError("Facilitator is not set")
 
         return requirements
 
