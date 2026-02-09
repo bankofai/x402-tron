@@ -19,8 +19,8 @@ class NetworkConfig:
     # EVM Networks
     EVM_MAINNET = "eip155:1"
     EVM_SEPOLIA = "eip155:11155111"
-    EVM_BSC = "eip155:56"
-    EVM_BSC_TESTNET = "eip155:97"
+    BSC_MAINNET = "eip155:56"
+    BSC_TESTNET = "eip155:97"
 
     # TRON Chain IDs
     CHAIN_IDS: Dict[str, int] = {
