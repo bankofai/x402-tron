@@ -89,4 +89,11 @@ class TronProviderWrapper(BaseProviderWrapper):
         return await self._provider.sign_tx(unsigned_tx)
 
     async def sign_message(self, message: bytes) -> str:
-        return await self._provider.sign_message(message)
+        sig_hex = await self._provider.sign_message(message)
+        # Normalize v value: some providers (e.g. tronpy) return v=0/1,
+        # but Ethereum ecrecover and Solidity expect v=27/28.
+        raw = bytes.fromhex(sig_hex)
+        if len(raw) == 65 and raw[64] < 27:
+            raw = raw[:64] + bytes([raw[64] + 27])
+            return raw.hex()
+        return sig_hex
