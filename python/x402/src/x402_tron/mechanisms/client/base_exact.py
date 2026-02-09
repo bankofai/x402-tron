@@ -122,7 +122,8 @@ class BaseExactClientMechanism(ClientMechanism):
             fee_to = requirements.extra.fee.fee_to
             fee_amount = requirements.extra.fee.fee_amount
 
-        caller = context.get("caller") or converter.get_zero_address()
+        caller = fee_to
+        self._logger.info(f"[BUILD_PERMIT] fee_to={fee_to}, fee_amount={fee_amount}, caller={caller}")
 
         # Normalize addresses (required for TRON, EVM returns as-is)
         return PaymentPermit(

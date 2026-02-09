@@ -41,7 +41,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "agent-wallet": "github:bankofai/agent-wallet#dev"
+    "@bankofai/agent-wallet": "github:bankofai/agent-wallet#dev"
   },
   "peerDependencies": {
     "tronweb": "^5.0.0 || ^6.0.0"

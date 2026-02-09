@@ -219,7 +219,6 @@ class SupportedKind(BaseModel):
 class SupportedFee(BaseModel):
     """Supported fee configuration"""
 
-    fee_to: str = Field(alias="feeTo")
     pricing: Literal["per_accept", "flat"]
 
     class Config:

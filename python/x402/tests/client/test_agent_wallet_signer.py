@@ -11,7 +11,6 @@ import pytest
 from x402_tron.signers.key_provider import KeyProvider
 from x402_tron.signers.adapter import TronProviderAdapter
 from x402_tron.signers.provider_wrapper import TronProviderWrapper, BaseProviderWrapper
-from x402_tron.signers.agent_wallet_provider import create_tron_provider
 from x402_tron.signers.client import AgentWalletClientSigner
 from x402_tron.signers.facilitator import AgentWalletFacilitatorSigner
 
@@ -164,16 +163,3 @@ async def test_facilitator_signer_with_network():
     assert signer.get_address() == mock.address
 
 
-@pytest.mark.asyncio
-async def test_create_tron_provider(monkeypatch):
-    class DummyProvider:
-        def __init__(self, **kwargs):
-            self.kwargs = kwargs
-
-        @classmethod
-        async def create(cls, **kwargs):
-            return cls(**kwargs)
-
-    monkeypatch.setitem(__import__("sys").modules, "wallet", type("M", (), {"TronProvider": DummyProvider}))
-    provider = await create_tron_provider(private_key="deadbeef")
-    assert provider.kwargs["private_key"] == "deadbeef"

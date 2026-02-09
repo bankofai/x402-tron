@@ -80,12 +80,11 @@ class X402Facilitator:
             self._mechanisms[network][scheme] = mechanism
         return self
 
-    def supported(self, fee_to: str, pricing: str = "flat") -> SupportedResponse:
+    def supported(self, pricing: str = "flat") -> SupportedResponse:
         """
         Return supported network/scheme combinations.
 
         Args:
-            fee_to: Facilitator fee recipient address (required)
             pricing: Fee pricing model, defaults to "flat"
 
         Returns:
@@ -103,7 +102,7 @@ class X402Facilitator:
                 )
 
         # Create fee configuration
-        fee = SupportedFee(fee_to=fee_to, pricing=pricing)
+        fee = SupportedFee(pricing=pricing)
 
         return SupportedResponse(kinds=kinds, fee=fee)
 

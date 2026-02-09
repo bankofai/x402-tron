@@ -26,6 +26,5 @@ export { AgentWalletClientSigner } from './signers/agentWalletSigner.js';
 export { TronProviderAdapter } from './signers/adapter.js';
 export { TronProviderWrapper } from './signers/providerWrapper.js';
 export type { BaseProviderWrapper } from './signers/providerWrapper.js';
-export { createTronProvider } from './signers/agentWalletProvider.js';
 export type { KeyProvider } from './signers/keyProvider.js';
 export type { TronWeb, TypedDataDomain, TypedDataField, TronNetwork, TRON_CHAIN_IDS } from './signers/types.js';
