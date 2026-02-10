@@ -175,7 +175,9 @@ export class EvmClientSigner implements ClientSigner {
         `[EvmClientSigner] ERC20 approval failed for ${token}:`,
         error,
       );
-      return false;
+      throw new InsufficientAllowanceError(
+        `ERC20 approval transaction failed for ${token}: ${error instanceof Error ? error.message : String(error)}`,
+      );
     }
   }
 
