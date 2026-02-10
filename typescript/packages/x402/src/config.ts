@@ -35,6 +35,8 @@ export const PAYMENT_PERMIT_ADDRESSES: Record<string, string> = {
   'tron:mainnet': 'TT8rEWbCoNX7vpEUauxb7rWJsTgs8vDLAn',
   'tron:shasta': 'TR2XninQ3jsvRRLGTifFyUHTBysffooUjt',
   'tron:nile': 'TFxDcGvS7zfQrS1YzcCMp673ta2NHHzsiH',
+  'eip155:97': '0x1825bB32db3443dEc2cc7508b2D818fc13EaD878',
+  // TODO: Add BSC Mainnet PaymentPermit address here
 };
 
 /** Zero address for TRON */
