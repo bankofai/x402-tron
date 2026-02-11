@@ -64,7 +64,9 @@ export class TronClientSigner implements ClientSigner {
   }
 
   private createTronWeb(fullHost: string): TronWeb {
-    return new TronWebClass({ fullHost, privateKey: this.privateKey }) as unknown as TronWeb;
+    const apiKey = typeof process !== 'undefined' ? process.env?.TRON_GRID_API_KEY : undefined;
+    const headers = apiKey ? { 'TRON-PRO-API-KEY': apiKey } : undefined;
+    return new TronWebClass({ fullHost, privateKey: this.privateKey, headers }) as unknown as TronWeb;
   }
 
   getAddress(): string {
