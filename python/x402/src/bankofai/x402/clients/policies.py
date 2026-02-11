@@ -5,7 +5,7 @@ Policies are applied in order after mechanism filtering and before token selecti
 """
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from bankofai.x402.tokens import TokenRegistry
 from bankofai.x402.types import PaymentRequirements
@@ -22,15 +22,6 @@ def _get_decimals(req: PaymentRequirements) -> int:
     return token.decimals if token else 6
 
 
-def _match_pattern(pattern: str, network: str) -> bool:
-    """Match a network against a pattern (e.g. 'tron:*' matches 'tron:nile')."""
-    if pattern == network:
-        return True
-    if pattern.endswith(":*"):
-        return network.startswith(pattern[:-1])
-    return False
-
-
 class SufficientBalancePolicy:
     """Policy that filters out requirements with insufficient balance.
 
@@ -38,8 +29,12 @@ class SufficientBalancePolicy:
     this policy checks the user's on-chain balance for each option
     and removes requirements the user cannot afford.
 
-    Supports multi-network setups: pass a single signer for single-network
-    use, or a dict[networkPattern, signer] for multi-network.
+    Signers are auto-resolved from registered mechanisms via a resolver
+    injected by X402Client.register_policy().
+
+    Usage::
+
+        client.register_policy(SufficientBalancePolicy())
 
     Requirements whose network has no matching signer are kept as-is
     (not filtered out), so downstream mechanism matching can still work.
@@ -48,28 +43,14 @@ class SufficientBalancePolicy:
     caller can raise an appropriate error.
     """
 
-    def __init__(
-        self,
-        signers: "ClientSigner | dict[str, ClientSigner]",
-    ) -> None:
-        if isinstance(signers, dict):
-            self._signers: list[tuple[str, "ClientSigner"]] = list(signers.items())
-        else:
-            self._signers = [("*", signers)]
-
-    def _find_signer(self, network: str) -> "ClientSigner | None":
-        for pattern, signer in self._signers:
-            if pattern == "*" or _match_pattern(pattern, network):
-                return signer
-        return None
-
     async def apply(
         self,
         requirements: list[PaymentRequirements],
+        signer_resolver: "Callable[[str, str], ClientSigner | None] | None" = None,
     ) -> list[PaymentRequirements]:
         affordable: list[PaymentRequirements] = []
         for req in requirements:
-            signer = self._find_signer(req.network)
+            signer = signer_resolver(req.scheme, req.network) if signer_resolver else None
             if signer is None:
                 # No signer for this network — keep the requirement so
                 # mechanism matching can still select it.

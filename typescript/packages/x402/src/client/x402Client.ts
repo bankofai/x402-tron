@@ -74,7 +74,10 @@ export type PaymentRequirementsSelector = (
  * Return a subset (or reordered list) of the input requirements.
  */
 export interface PaymentPolicy {
-  apply(requirements: PaymentRequirements[]): PaymentRequirements[] | Promise<PaymentRequirements[]>;
+  apply(
+    requirements: PaymentRequirements[],
+    signerResolver?: (scheme: string, network: string) => ClientSigner | null,
+  ): PaymentRequirements[] | Promise<PaymentRequirements[]>;
 }
 
 /** Filter options for selecting payment requirements */
@@ -166,7 +169,10 @@ export class X402Client {
     candidates = candidates.filter(r => this.findMechanism(r.scheme, r.network) !== null);
 
     for (const policy of this.policies) {
-      candidates = await policy.apply(candidates);
+      candidates = await policy.apply(candidates, (scheme, network) => {
+        const mechanism = this.findMechanism(scheme, network);
+        return mechanism?.getSigner?.() ?? null;
+      });
     }
 
     if (candidates.length === 0) {

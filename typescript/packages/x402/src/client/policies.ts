@@ -13,19 +13,8 @@ function getDecimals(req: PaymentRequirements): number {
   return token?.decimals ?? 6;
 }
 
-/** Entry mapping a network pattern to a signer */
-interface SignerEntry {
-  pattern: string;
-  signer: ClientSigner;
-}
-
-function matchPattern(pattern: string, network: string): boolean {
-  if (pattern === network) return true;
-  if (pattern.endsWith(':*')) {
-    return network.startsWith(pattern.slice(0, -1));
-  }
-  return false;
-}
+/** Callback that resolves a signer for a given scheme+network */
+export type SignerResolver = (scheme: string, network: string) => ClientSigner | null;
 
 /**
  * Policy that filters out requirements with insufficient balance.
@@ -34,8 +23,11 @@ function matchPattern(pattern: string, network: string): boolean {
  * this policy checks the user's on-chain balance for each option
  * and removes requirements the user cannot afford.
  *
- * Supports multi-network setups: pass a single signer for single-network
- * use, or a Record<networkPattern, signer> for multi-network.
+ * Signers are auto-resolved from registered mechanisms via the
+ * signerResolver callback passed to apply() by X402Client.
+ *
+ * Usage:
+ *   x402.registerPolicy(new SufficientBalancePolicy());
  *
  * Requirements whose network has no matching signer are kept as-is
  * (not filtered out), so downstream mechanism matching can still work.
@@ -44,37 +36,13 @@ function matchPattern(pattern: string, network: string): boolean {
  * caller can raise an appropriate error.
  */
 export class SufficientBalancePolicy implements PaymentPolicy {
-  private signers: SignerEntry[];
-
-  /**
-   * @param signers - A single ClientSigner (legacy), or a
-   *   Record<networkPattern, ClientSigner> for multi-network support.
-   *   Network patterns follow the same syntax as X402Client.register()
-   *   (e.g. "tron:*", "eip155:97").
-   */
-  constructor(signers: ClientSigner | Record<string, ClientSigner>) {
-    if (typeof signers === 'object' && !('checkBalance' in signers)) {
-      this.signers = Object.entries(signers as Record<string, ClientSigner>).map(
-        ([pattern, signer]) => ({ pattern, signer })
-      );
-    } else {
-      this.signers = [{ pattern: '*', signer: signers as ClientSigner }];
-    }
-  }
-
-  private findSigner(network: string): ClientSigner | null {
-    for (const entry of this.signers) {
-      if (entry.pattern === '*' || matchPattern(entry.pattern, network)) {
-        return entry.signer;
-      }
-    }
-    return null;
-  }
-
-  async apply(requirements: PaymentRequirements[]): Promise<PaymentRequirements[]> {
+  async apply(
+    requirements: PaymentRequirements[],
+    signerResolver?: SignerResolver,
+  ): Promise<PaymentRequirements[]> {
     const affordable: PaymentRequirements[] = [];
     for (const req of requirements) {
-      const signer = this.findSigner(req.network);
+      const signer = signerResolver ? signerResolver(req.scheme, req.network) : null;
       if (!signer) {
         // No signer for this network — keep the requirement so mechanism
         // matching can still select it (balance check is best-effort).

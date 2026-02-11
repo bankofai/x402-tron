@@ -51,8 +51,15 @@ class PaymentPolicy(Protocol):
     async def apply(
         self,
         requirements: list[PaymentRequirements],
+        signer_resolver: Any = None,
     ) -> list[PaymentRequirements]:
-        """Apply this policy to the given requirements."""
+        """Apply this policy to the given requirements.
+
+        Args:
+            requirements: List of payment requirements to filter.
+            signer_resolver: Optional callback (scheme, network) -> ClientSigner
+                that resolves a signer from registered mechanisms.
+        """
         ...
 
 
@@ -104,16 +111,24 @@ class X402Client:
         Register a payment policy.
 
         Policies are applied in order after mechanism filtering
-        and before token selection.
+        and before token selection. Each policy receives a signer_resolver
+        callback that can resolve signers from registered mechanisms.
 
         Args:
-            policy: Callable that filters/reorders payment requirements
+            policy: Policy that filters/reorders payment requirements
 
         Returns:
             self for method chaining
         """
         self._policies.append(policy)
         return self
+
+    def _resolve_signer(self, scheme: str, network: str) -> Any:
+        """Resolve a signer from registered mechanisms for the given scheme+network."""
+        mechanism = self._find_mechanism(scheme, network)
+        if mechanism is not None and hasattr(mechanism, "get_signer"):
+            return mechanism.get_signer()
+        return None
 
     def register(self, network_pattern: str, mechanism: ClientMechanism) -> "X402Client":
         """
@@ -174,7 +189,7 @@ class X402Client:
         logger.debug(f"After mechanism filter: {len(candidates)} candidates")
 
         for policy in self._policies:
-            candidates = await policy.apply(candidates)
+            candidates = await policy.apply(candidates, signer_resolver=self._resolve_signer)
             logger.debug(f"After policy: {len(candidates)} candidates")
 
         if not candidates:
