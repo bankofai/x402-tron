@@ -99,9 +99,7 @@ class X402Client:
         self._policies: list[PaymentPolicy] = []
         self._token_strategy = token_strategy
 
-    def register_policy(
-        self, policy: "type[PaymentPolicy] | PaymentPolicy"
-    ) -> "X402Client":
+    def register_policy(self, policy: "type[PaymentPolicy] | PaymentPolicy") -> "X402Client":
         """
         Register a payment policy (class or instance).
 
