@@ -38,7 +38,7 @@ pip install -e .[all]
 The TypeScript SDK provides client-side integration tools.
 
 ```bash
-npm install @bankofai/x402 tronweb dotenv
+npm install @bankofai/x402
 ```
 
 ## AI Agent Integration
@@ -48,7 +48,7 @@ x402 is designed for the Agentic Web. AI agents can autonomously negotiate and p
 This skill enables agents to:
 
 1. Detect `402 Payment Required` responses.
-2. Sign payment authorizations automatically.
+2. Sign TIP-712/EIP-712 payment authorizations automatically.
 3. Manage wallet balances and handle the challenge-response loop.
 
 ## Quick Start
